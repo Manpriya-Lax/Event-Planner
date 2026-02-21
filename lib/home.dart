@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
 import 'package:eventplanner/theme.dart';
+import 'package:eventplanner/Profile.dart';
+import 'package:eventplanner/add.dart';
 
 class homePage extends StatelessWidget {
   const homePage({super.key});
@@ -10,6 +12,43 @@ class homePage extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                ),
+                child: Text('Menu'),
+              ),
+              ListTile(
+                title: const Text('Home'),
+                onTap: () {
+                  // Handle Home tap
+                  Navigator.pop(context); // Close the drawer
+                },
+              ),
+              ListTile(
+                title: const Text('Profile'),
+                onTap: () {
+                  // Handle Profile tap
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder:  (context) => ProfilePage()),
+                  ); // Close the drawer
+                },
+              ),
+              ListTile(
+                title: const Text('Settings'),
+                onTap: () {
+                  // Handle Settings tap
+                  Navigator.pop(context); // Close the drawer
+                },
+              ),
+            ],
+          ),
+        ),
         appBar: AppBar(
            backgroundColor: AppColors.primary,
       foregroundColor: AppColors.ink,
@@ -21,7 +60,14 @@ class homePage extends StatelessWidget {
         color: AppColors.ink,
         
       ),
-      title:Text("Home"),
+      title:const Align(
+        alignment: Alignment.centerRight,
+        child: Text("Home"),
+      ),
+
+     
+
+      
         ),
 
         backgroundColor: AppColors.bg,
@@ -106,11 +152,30 @@ class homePage extends StatelessWidget {
                   ),
                 ),
 
+                
 
               ],
               ),
             ),
+            
+            
           ),
+
+          floatingActionButton: FloatingActionButton(
+    onPressed: () {
+      print("Add new party");
+       Navigator.push(context, MaterialPageRoute(builder: (_) => AddEventPage()));
+    },
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(30), // Rounded corners
+    ),
+    backgroundColor: AppColors.yellow,
+    
+    child: const Icon(Icons.add), // + icon
+  ),
+
+  floatingActionButtonLocation:
+      FloatingActionButtonLocation.endFloat, 
       
       ),
     );

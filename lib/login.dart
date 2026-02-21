@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:eventplanner/theme.dart';
+import 'package:eventplanner/home.dart';
 
 class loginPage extends StatefulWidget {
   const loginPage({super.key});
@@ -20,9 +22,12 @@ class _loginPageState extends State<loginPage> {
       debugShowCheckedModeBanner: false,
 
       home: Scaffold(
+       backgroundColor: AppColors.bg,
+
         body: Container(
           height: double.infinity,
           width: double.infinity,
+          
 
           child: Center(
             child: SingleChildScrollView(
@@ -62,7 +67,14 @@ class _loginPageState extends State<loginPage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                                 hintText: "email",
-                                border: OutlineInputBorder(),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                      borderSide: BorderSide(
+                                         color: AppColors.ink,
+                                         width: 3,
+                                       ),
+                                ),
+                                
                               ),
                             ),
 
@@ -96,7 +108,13 @@ class _loginPageState extends State<loginPage> {
                                         : Icons.remove_red_eye_outlined,
                                   ),
                                 ),
-                                border: OutlineInputBorder(),
+                                border: OutlineInputBorder(                                 
+                                    borderRadius: BorderRadius.circular(30),
+                                      borderSide: BorderSide(
+                                         color: AppColors.ink,
+                                         width: 3,
+                                       ), 
+                                ),
                               ),
                             ),
 
@@ -112,11 +130,22 @@ class _loginPageState extends State<loginPage> {
                                 height: 50.0,
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(9.0),
-                                  ),
-                                ),
+                      color: AppColors.blue,
+                        borderRadius: BorderRadius.circular(20),
+
+                       border: Border.all(
+                        color: AppColors.ink,
+                        width: 2,
+                        ),
+                        
+                        boxShadow: const [
+                         BoxShadow(
+                         color: AppColors.ink,
+                         offset: Offset(5, 5), // X and Y shadow position
+                        blurRadius: 0,        // IMPORTANT: 0 for brutalism
+                          ),
+                        ],),
+                        
                                 child: Center(
                                   child: Text(
                                     "Sign in ",
@@ -144,19 +173,39 @@ class _loginPageState extends State<loginPage> {
 
                             SizedBox(height: 10.0),
                             InkWell(
-                              child: Card(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => homePage(),
+                                  ),
+                                );
+                               
+                              },
+                             
                                 child: Container(
                                   height: 50.0,
                                   width: double.infinity,
                                   margin: EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
+                                    left: 1.0,
+                                    right: 1.0,
                                   ),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(9.0),
-                                    ),
-                                  ),
+                      color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+
+                       border: Border.all(
+                        color: AppColors.ink,
+                        width: 2,
+                        ),
+                        
+                        boxShadow: const [
+                         BoxShadow(
+                         color: AppColors.ink,
+                         offset: Offset(5, 5), // X and Y shadow position
+                        blurRadius: 0,        // IMPORTANT: 0 for brutalism
+                          ),
+                        ],),
                                   child: Center(
                                     child: Text(
                                       "Create a new accout ",
@@ -168,7 +217,7 @@ class _loginPageState extends State<loginPage> {
                                     ),
                                   ),
                                 ),
-                              ),
+                            
                             ),
                           ],
                         ),
