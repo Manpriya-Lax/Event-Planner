@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
 import 'package:eventplanner/home.dart';
+import 'package:eventplanner/register.dart';
 
 void main() {
   runApp( const MainApp());
@@ -13,7 +14,7 @@ void main() {
   Widget build(BuildContext context) {    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const loginPage(),
+      home: const RegisterPage(),
     );
   } 
 }

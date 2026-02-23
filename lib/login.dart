@@ -1,6 +1,8 @@
+import 'package:eventplanner/register.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:eventplanner/home.dart';
+
 
 class loginPage extends StatefulWidget {
   const loginPage({super.key});
@@ -177,7 +179,7 @@ class _loginPageState extends State<loginPage> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => homePage(),
+                                    builder: (context) => RegisterPage(),
                                   ),
                                 );
                                
