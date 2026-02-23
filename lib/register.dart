@@ -1,3 +1,4 @@
+import 'package:eventplanner/home.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:eventplanner/login.dart';
@@ -145,7 +146,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (_) => const loginPage()),
+                        MaterialPageRoute(builder: (_) => const homePage()),
                       );
                     },
                     child: Text(
