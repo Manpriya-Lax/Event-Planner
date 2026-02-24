@@ -1,15 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:eventplanner/Profile.dart';
 import 'package:eventplanner/add.dart';
-
+import 'package:eventplanner/friends.dart';
 class homePage extends StatelessWidget {
   const homePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    FirebaseApp app = Firebase.app();
     return MaterialApp(
+
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         drawer: Drawer(
@@ -46,6 +49,16 @@ class homePage extends StatelessWidget {
                   Navigator.pop(context); // Close the drawer
                 },
               ),
+              ListTile(
+                title: const Text('Friends'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const FriendsPage()),
+                  );
+                },
+              ),
+
             ],
           ),
         ),
@@ -60,9 +73,9 @@ class homePage extends StatelessWidget {
         color: AppColors.ink,
         
       ),
-      title:const Align(
+      title: Align(
         alignment: Alignment.centerRight,
-        child: Text("Home"),
+        child: Text("Home${app.name}"),
       ),
 
      
