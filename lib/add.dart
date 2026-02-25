@@ -18,6 +18,100 @@ class _AddEventPageState extends State<AddEventPage> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
+  Future<void> _pickDate(TextEditingController controller) async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime.now(), // 🚫 No past dates
+    lastDate: DateTime(2100),
+  );
+
+  if (picked != null) {
+    // Format: DD/MM/YYYY
+    final day = picked.day.toString().padLeft(2, '0');
+    final month = picked.month.toString().padLeft(2, '0');
+    final year = picked.year.toString();
+    controller.text = "$day/$month/$year";
+  }
+}
+
+Future<void> _pickTime(TextEditingController controller) async {
+  final TimeOfDay? picked = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
+
+  if (picked != null) {
+    final h = picked.hour.toString().padLeft(2, '0');
+    final m = picked.minute.toString().padLeft(2, '0');
+    controller.text = "$h:$m";
+  }
+}
+
+Widget _buildDateField(String hint, TextEditingController controller) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.ink, width: 2),
+      boxShadow: const [
+        BoxShadow(
+          color: AppColors.ink,
+          offset: Offset(5, 5),
+          blurRadius: 0,
+        ),
+      ],
+    ),
+    child: TextFormField(
+      controller: controller,
+      readOnly: true,
+      onTap: () => _pickDate(controller),
+      validator: (value) {
+        if (value == null || value.isEmpty) return "Select a date";
+        return null;
+      },
+      decoration: InputDecoration(
+        hintText: hint,
+        contentPadding: const EdgeInsets.all(15),
+        border: InputBorder.none,
+        suffixIcon: const Icon(Icons.calendar_month),
+      ),
+    ),
+  );
+}
+
+Widget _buildTimeField(String hint, TextEditingController controller) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.ink, width: 2),
+      boxShadow: const [
+        BoxShadow(
+          color: AppColors.ink,
+          offset: Offset(5, 5),
+          blurRadius: 0,
+        ),
+      ],
+    ),
+    child: TextFormField(
+      controller: controller,
+      readOnly: true,
+      onTap: () => _pickTime(controller),
+      validator: (value) {
+        if (value == null || value.isEmpty) return "Select a time";
+        return null;
+      },
+      decoration: InputDecoration(
+        hintText: hint,
+        contentPadding: const EdgeInsets.all(15),
+        border: InputBorder.none,
+        suffixIcon: const Icon(Icons.access_time),
+      ),
+    ),
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,10 +134,10 @@ class _AddEventPageState extends State<AddEventPage> {
               _buildTextField("Event Name", nameController),
               const SizedBox(height: 20),
 
-              _buildTextField("Date (DD/MM/YYYY)", dateController),
+              _buildDateField("Date (DD/MM/YYYY)", dateController),
               const SizedBox(height: 20),
 
-              _buildTextField("Time (HH:MM)", timeController),
+              _buildTimeField("Time (HH:MM)", timeController),
               const SizedBox(height: 20),
 
               _buildTextField("Location", locationController),
