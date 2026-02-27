@@ -1,3 +1,6 @@
+import 'package:eventplanner/Profile.dart';
+import 'package:eventplanner/add.dart';
+import 'package:eventplanner/friends.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
 import 'package:eventplanner/home.dart';
@@ -23,7 +26,22 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   Widget build(BuildContext context) {    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const homePage(),
+      home:  homePage(),
+
+      routes: {
+        "/": (context) => const homePage(),
+        "/login": (context) => const loginPage(),
+        "/register": (context) => const RegisterPage(),
+        "/home": (context) => const homePage(),
+        "/profile": (context) => const ProfilePage(),
+        "/add": (context) => const AddEventPage(),
+        '/friends': (context) => const FriendsPage(),
+        "/settings": (context) => const Settings(),
+        
+        
+      },
+
+
     );
   } 
 }

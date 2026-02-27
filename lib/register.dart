@@ -90,8 +90,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   if (v == null || v.isEmpty) {
                     return "Enter password";
                   }
-                  if (v.length < 6) {
-                    return "Password must be at least 6 characters";
+                  if (v.length < 8) {
+                    return "Password must be at least 8 characters";
+                  }
+                  if (!RegExp(r'[A-Z]').hasMatch(v)) {
+                    return "Include at least one uppercase letter";
+                  }
+                  if (!RegExp(r'[a-z]').hasMatch(v)) {
+                    return "Include at least one lowercase letter";
+                  }
+                  if (!RegExp(r'[0-9]').hasMatch(v)) {
+                    return "Include at least one number";
+                  }
+                  if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(v)) {
+                    return "Include at least one special character";
                   }
                   return null;
                 },
