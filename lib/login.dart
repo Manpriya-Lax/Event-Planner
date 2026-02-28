@@ -155,10 +155,27 @@ class _loginPageState extends State<loginPage> {
                   print('fire ${user?.uid}');
   
                                  
-                                
+                                if (credential.user != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Login Successful!"),
+                                    ),
+                                  );
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/home',
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Login Failed!"),
+                                    ),
+                                  );
 
                                 }
+                              }
                               },
+
                               child: Container(
                                 height: 50.0,
                                 width: double.infinity,

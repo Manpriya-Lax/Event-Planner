@@ -55,6 +55,14 @@ class homePage extends StatelessWidget {
                   Navigator.pushNamed(context, "/friends");
                 },
               ),
+              ListTile(
+                  title: const Text('Logout'),
+                  onTap: () {
+                    // Handle Logout tap
+                    Navigator.pushNamed(context, "/login");
+                    // Close the drawer
+                  },
+                ),
 
             ],
           ),

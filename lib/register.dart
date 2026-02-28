@@ -162,11 +162,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 var credential = await instance.createUserWithEmailAndPassword(
 
-                  email: emailController.text.trim(),
-                  password: passwordController.text.trim(),
+                   email: 'manpriyapathirana@gmail.com',
+                  password: '123456.Ac',
                   
+
                   
                   );
+
+
+                  var user =credential.user;
+                  await user?.sendEmailVerification();
+
                   print(credential);
   
                     ScaffoldMessenger.of(context).showSnackBar(
