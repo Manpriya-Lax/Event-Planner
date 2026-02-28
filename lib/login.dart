@@ -1,4 +1,7 @@
+import 'package:eventplanner/firebase_options.dart';
 import 'package:eventplanner/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:eventplanner/home.dart';
@@ -12,7 +15,12 @@ class loginPage extends StatefulWidget {
 }
 
 class _loginPageState extends State<loginPage> {
+
   bool revealPassword = false;
+
+ final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextStyle textfieldstyle() {
     return TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold);
@@ -54,7 +62,10 @@ class _loginPageState extends State<loginPage> {
                         child: Column(
                           children: [
                             TextFormField(
+                                              controller: emailController,
+
                               keyboardType: TextInputType.emailAddress,
+
                               validator: (emailString) {
                                 if (emailString == null ||
                                     emailString.isEmpty ||
@@ -83,6 +94,7 @@ class _loginPageState extends State<loginPage> {
                             SizedBox(height: 8.0),
                             TextFormField(
                               obscureText: !revealPassword,
+                              controller: passwordController,
                               keyboardType: TextInputType.visiblePassword,
                               validator: (PasswordString) {
                                 if (PasswordString == null ||
@@ -122,10 +134,29 @@ class _loginPageState extends State<loginPage> {
 
                             SizedBox(height: 40.0),
                             InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 if (_formKey.currentState?.validate() ??
                                     false) {
-                                  _formKey.currentState?.save();
+                                 WidgetsFlutterBinding.ensureInitialized();
+                await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform );
+                var instance = FirebaseAuth.instance;
+                print (instance);
+
+                var credential = await instance.signInWithEmailAndPassword(
+
+                  email: 'manpriyapathirana@gmail.com',
+                  password: '123456.Ac',
+                  
+                  
+                  );
+
+                  print('firebase auth instance: $credential');
+                  var user =credential.user;
+                  print('fire ${user?.uid}');
+  
+                                 
+                                
+
                                 }
                               },
                               child: Container(

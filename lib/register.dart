@@ -1,7 +1,11 @@
+import 'package:eventplanner/firebase_options.dart';
 import 'package:eventplanner/home.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:eventplanner/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -21,6 +25,20 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _hidePassword = true;
   bool _hideConfirmPassword = true;
+
+ Future<void> _registerUser() async {
+              try {
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                  email: emailController.text.trim(),
+                  password: passwordController.text.trim(),
+                );
+              } on FirebaseAuthException catch (e) {
+                print("Firebase Error Code: ${e.code}");
+                print("Firebase Error Message: ${e.message}");
+              } catch (e) {
+                print("General Error: $e");
+              }
+            }
 
   @override
   void dispose() {
@@ -133,9 +151,24 @@ class _RegisterPageState extends State<RegisterPage> {
 
               _brutalButton(
                 text: "Create Account",
-                onTap: () {
+                onTap: () async {
                   if (_formKey.currentState?.validate() ?? false) {
                     // ✅ Here you can add Firebase sign up later
+                    
+              WidgetsFlutterBinding.ensureInitialized();
+                await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform );
+                var instance = FirebaseAuth.instance;
+                print (instance);
+
+                var credential = await instance.createUserWithEmailAndPassword(
+
+                  email: emailController.text.trim(),
+                  password: passwordController.text.trim(),
+                  
+                  
+                  );
+                  print(credential);
+  
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Registered Successfully!")),
                     );
@@ -150,15 +183,16 @@ class _RegisterPageState extends State<RegisterPage> {
 
               const SizedBox(height: 18),
 
+             
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text("Already have an account? "),
                   InkWell(
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const homePage()),
+                      Navigator.pushNamed(
+                        context, '/login',
                       );
                     },
                     child: Text(

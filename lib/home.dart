@@ -29,33 +29,30 @@ class homePage extends StatelessWidget {
                 title: const Text('Home'),
                 onTap: () {
                   // Handle Home tap
-                  Navigator.pop(context); // Close the drawer
-                },
+                  Navigator.pushNamed(context, "/home");
+                   // Close the drawer 
+                   },
               ),
               ListTile(
                 title: const Text('Profile'),
                 onTap: () {
                   // Handle Profile tap
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder:  (context) => ProfilePage()),
-                  ); // Close the drawer
+                  Navigator.pushNamed(context, "/profile");
+                   // Close the drawer
                 },
               ),
               ListTile(
                 title: const Text('Settings'),
                 onTap: () {
                   // Handle Settings tap
-                  Navigator.pop(context); // Close the drawer
+                  Navigator.pushNamed(context, "/settings");
+                   // Close the drawer
                 },
               ),
               ListTile(
                 title: const Text('Friends'),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const FriendsPage()),
-                  );
+                  Navigator.pushNamed(context, "/friends");
                 },
               ),
 
@@ -176,8 +173,8 @@ class homePage extends StatelessWidget {
 
           floatingActionButton: FloatingActionButton(
     onPressed: () {
-      print("Add new party");
-       Navigator.push(context, MaterialPageRoute(builder: (_) => AddEventPage()));
+     
+       Navigator.pushNamed(context, "/add");
     },
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(30), // Rounded corners

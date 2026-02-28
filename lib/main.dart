@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
 import 'package:eventplanner/home.dart';
 import 'package:eventplanner/register.dart';
+import 'package:eventplanner/setting.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,17 +27,17 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   Widget build(BuildContext context) {    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  homePage(),
+      home:  const RegisterPage(),
 
       routes: {
-        "/": (context) => const homePage(),
+      
         "/login": (context) => const loginPage(),
         "/register": (context) => const RegisterPage(),
         "/home": (context) => const homePage(),
         "/profile": (context) => const ProfilePage(),
         "/add": (context) => const AddEventPage(),
         '/friends': (context) => const FriendsPage(),
-        "/settings": (context) => const Settings(),
+        "/settings": (context) => const settings(),
         
         
       },
