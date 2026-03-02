@@ -133,19 +133,22 @@ class _loginPageState extends State<loginPage> {
                             ),
 
                             SizedBox(height: 40.0),
+
+                            //  Sign In Button
+
+
                             InkWell(
                               onTap: () async {
                                 if (_formKey.currentState?.validate() ??
                                     false) {
-                                 WidgetsFlutterBinding.ensureInitialized();
-                await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform );
+                                 
                 var instance = FirebaseAuth.instance;
                 print (instance);
 
                 var credential = await instance.signInWithEmailAndPassword(
 
-                  email: 'manpriyapathirana@gmail.com',
-                  password: '123456.Ac',
+                  email: emailController.text.trim(),
+                  password: passwordController.text.trim(),
                   
                   
                   );
@@ -161,7 +164,7 @@ class _loginPageState extends State<loginPage> {
                                       content: Text("Login Successful!"),
                                     ),
                                   );
-                                  Navigator.pushNamed(
+                                  Navigator.pushReplacementNamed(
                                     context,
                                     '/home',
                                   );

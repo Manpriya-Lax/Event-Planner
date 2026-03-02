@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventplanner/firebase_options.dart';
 import 'package:eventplanner/home.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,8 +21,50 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController =TextEditingController();
+  final TextEditingController dateController = TextEditingController();
+
+  String? _selectedGender; 
+
+
+  
+  final List<String> _avatars = [
+  "assets/imgs/1.png",
+  "assets/imgs/2.png",
+  "assets/imgs/3.png",
+  "assets/imgs/4.png",
+  "assets/imgs/5.png",
+  "assets/imgs/6.png",
+  "assets/imgs/7.png",
+  "assets/imgs/8.png",
+  "assets/imgs/9.png",
+  "assets/imgs/10.png",
+  "assets/imgs/11.png",
+  "assets/imgs/12.png",
+  "assets/imgs/13.png",
+  "assets/imgs/14.png",
+  "assets/imgs/15.png",
+];
+
+int _selectedAvatarIndex = 0;
+
+
+Future<void> _pickDate(TextEditingController controller) async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: DateTime(2016, 1, 1),
+    firstDate: DateTime(1950), // 🚫 No past dates
+    lastDate: DateTime.now(),
+  );
+
+  if (picked != null) {
+    // Format: DD/MM/YYYY
+    final day = picked.day.toString().padLeft(2, '0');
+    final month = picked.month.toString().padLeft(2, '0');
+    final year = picked.year.toString();
+    controller.text = "$day/$month/$year";
+  }
+}
 
   bool _hidePassword = true;
   bool _hideConfirmPassword = true;
@@ -39,6 +82,53 @@ class _RegisterPageState extends State<RegisterPage> {
                 print("General Error: $e");
               }
             }
+
+ Future<void> _pickAvatar() async {
+  final chosenIndex = await showDialog<int>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Select an Avatar"),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: GridView.builder(
+            shrinkWrap: true,
+            itemCount: _avatars.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemBuilder: (context, index) {
+              final isSelected = index == _selectedAvatarIndex;
+
+              return InkWell(
+                onTap: () => Navigator.pop(context, index),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? AppColors.primary : AppColors.ink,
+                      width: isSelected ? 4 : 2,
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage(_avatars[index]),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    },
+  );
+
+  if (chosenIndex != null) {
+    setState(() => _selectedAvatarIndex = chosenIndex);
+  }
+}
+
 
   @override
   void dispose() {
@@ -65,15 +155,48 @@ class _RegisterPageState extends State<RegisterPage> {
           key: _formKey,
           child: Column(
             children: [
-              const SizedBox(height: 20),
+             // const SizedBox(height: 20),
+
+              GestureDetector(
+  onTap: _pickAvatar,
+  child: Container(
+    width: 120,
+    height: 120,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(color: AppColors.ink, width: 3),
+      boxShadow: const [
+        BoxShadow(
+          color: AppColors.ink,
+          offset: Offset(5, 5),
+          blurRadius: 0,
+        ),
+      ],
+    ),
+    child: CircleAvatar(
+      backgroundImage: AssetImage(_avatars[_selectedAvatarIndex]),
+    ),
+  ),
+),
+const SizedBox(height: 4),
+TextButton(
+  onPressed: _pickAvatar,
+  child: const Text("Choose Avatar"),
+),
 
               _brutalField(
-                hint: "Full Name",
+                hint: "User Name",
                 controller: nameController,
                 keyboardType: TextInputType.name,
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return "Enter your name";
+                    return "Enter your user name";
+                  }
+                  if (v.trim().length < 3) {
+                    return "User name must be at least 3 characters";
+                  }
+                   if (v.trim().length > 15) {
+                    return "User name cannot exceed 15 characters";
                   }
                   return null;
                 },
@@ -91,10 +214,23 @@ class _RegisterPageState extends State<RegisterPage> {
                   if (!v.contains("@")) {
                     return "Enter a valid email";
                   }
+                  if (!v.contains(".")) {
+                    return "Enter a valid email";
+                  }
+                  if (v.contains(" ")) {
+                    return "Email cannot contain spaces";
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 18),
+              _buildDateField("Date (DD/MM/YYYY)", dateController),
+
+              const SizedBox(height: 18),
+              _brutalDropdown(),
+
+              const SizedBox(height: 18),
+
 
               _brutalField(
                 hint: "Password",
@@ -153,7 +289,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 text: "Create Account",
                 onTap: () async {
                   if (_formKey.currentState?.validate() ?? false) {
-                    // ✅ Here you can add Firebase sign up later
+                    // Firebase sign up
                     
               WidgetsFlutterBinding.ensureInitialized();
                 await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform );
@@ -162,18 +298,39 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 var credential = await instance.createUserWithEmailAndPassword(
 
-                   email: 'manpriyapathirana@gmail.com',
-                  password: '123456.Ac',
+                   email: emailController.text.trim(),
+                  password: passwordController.text.trim(),
                   
 
                   
                   );
 
 
+                  await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
+                    'username': nameController.text.trim(), 
+                    'avatarId': _selectedAvatarIndex,
+                    'createdAt': FieldValue.serverTimestamp(),
+                    'DateOfBirth': dateController.text.trim(),
+                    'gender': _selectedGender,
+
+                  });
+
+
                   var user =credential.user;
                   await user?.sendEmailVerification();
 
                   print(credential);
+
+                  final username = nameController.text.trim().toLowerCase();
+
+                    final taken = await isUsernameTaken(username);
+                  if (taken) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Username already taken")),
+                    );
+                    return;
+                  } else {
   
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Registered Successfully!")),
@@ -181,8 +338,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => const loginPage()),
+                      MaterialPageRoute(builder: (_) => const homePage()),
                     );
+                  }
                   }
                 },
               ),
@@ -305,4 +463,84 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  Widget _buildDateField(String hint, TextEditingController controller) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.ink, width: 2),
+      boxShadow: const [
+        BoxShadow(
+          color: AppColors.ink,
+          offset: Offset(5, 5),
+          blurRadius: 0,
+        ),
+      ],
+    ),
+    child: TextFormField(
+      controller: controller,
+      readOnly: true,
+      onTap: () => _pickDate(controller),
+      validator: (value) {
+        if (value == null || value.isEmpty) return "Select a date";
+        return null;
+      },
+      decoration: InputDecoration(
+        hintText: hint,
+        contentPadding: const EdgeInsets.all(15),
+        border: InputBorder.none,
+        suffixIcon: const Icon(Icons.calendar_month),
+      ),
+    ),
+  );
+}
+
+Widget _brutalDropdown() {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.ink, width: 2),
+      boxShadow: const [
+        BoxShadow(
+          color: AppColors.ink,
+          offset: Offset(5, 5),
+          blurRadius: 0,
+        ),
+      ],
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+    child: DropdownButtonFormField<String>(
+      value: _selectedGender,
+      isExpanded: true,
+      decoration: const InputDecoration(
+        border: InputBorder.none,
+      ),
+      hint: const Text("Gender"),
+      items: const [
+        DropdownMenuItem(value: "male", child: Text("Male")),
+        DropdownMenuItem(value: "female", child: Text("Female")),
+        DropdownMenuItem(value: "prefer_not_say", child: Text("Prefer not to say")),
+      ],
+      onChanged: (value) {
+        setState(() => _selectedGender = value);
+      },
+      validator: (value) {
+        if (value == null) return "Please select a gender option";
+        return null;
+      },
+    ),
+  );
+}
+
+
+Future<bool> isUsernameTaken(String username) async {
+  final doc = await FirebaseFirestore.instance
+      .collection('usernames')
+      .doc(username.toLowerCase())
+      .get();
+
+  return doc.exists;
+}
 }
