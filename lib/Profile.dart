@@ -25,6 +25,7 @@ class ProfilePage extends StatelessWidget {
             Container(
               width: 120,
               height: 120,
+              
               decoration: BoxDecoration(
                 color: AppColors.mint,
                 shape: BoxShape.circle,
@@ -40,11 +41,14 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.person,
-                size: 60,
-                color: Colors.black,
-              ),
+              child: ClipOval(
+                child: Image.asset(
+                  "assets/imgs/1.png",
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.cover,
+                ),
+              )
             ),
 
             const SizedBox(height: 30),
