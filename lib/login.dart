@@ -230,7 +230,7 @@ class _loginPageState extends State<loginPage> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => RegisterPage(),
+                                    builder: (context) => homePage(),
                                   ),
                                 );
                                

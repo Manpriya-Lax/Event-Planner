@@ -69,19 +69,29 @@ Future<void> _pickDate(TextEditingController controller) async {
   bool _hidePassword = true;
   bool _hideConfirmPassword = true;
 
- Future<void> _registerUser() async {
-              try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                  email: emailController.text.trim(),
-                  password: passwordController.text.trim(),
-                );
-              } on FirebaseAuthException catch (e) {
-                print("Firebase Error Code: ${e.code}");
-                print("Firebase Error Message: ${e.message}");
-              } catch (e) {
-                print("General Error: $e");
-              }
-            }
+//  Future<void> _registerUser() async {
+//               try {
+//                 await FirebaseAuth.instance.createUserWithEmailAndPassword(
+//                   email: emailController.text.trim(),
+//                   password: passwordController.text.trim(),
+//                 );
+//               } on FirebaseAuthException catch (e) {
+//                 print("Firebase Error Code: ${e.code}");
+//                 print("Firebase Error Message: ${e.message}");
+//               } catch (e) {
+//                 print("General Error: $e");
+//               }
+//             }
+
+            Future<bool> usernameExists(String username) async {
+              final result = await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: username.trim().toLowerCase())
+              .limit(1)
+              .get();
+
+  return result.docs.isNotEmpty;
+}
 
  Future<void> _pickAvatar() async {
   final chosenIndex = await showDialog<int>(
@@ -291,7 +301,7 @@ TextButton(
                   if (_formKey.currentState?.validate() ?? false) {
                     // Firebase sign up
                     
-              WidgetsFlutterBinding.ensureInitialized();
+               WidgetsFlutterBinding.ensureInitialized();
                 await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform );
                 var instance = FirebaseAuth.instance;
                 print (instance);
@@ -304,6 +314,18 @@ TextButton(
 
                   
                   );
+
+                  final username = nameController.text.trim().toLowerCase();
+
+                  bool exists = await usernameExists(username);
+
+                  if (exists) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Username already taken")),
+                    );
+                    return;
+                  }
+                  else{
 
 
                   await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
@@ -321,16 +343,8 @@ TextButton(
 
                   print(credential);
 
-                  final username = nameController.text.trim().toLowerCase();
 
-                    final taken = await isUsernameTaken(username);
-                  if (taken) {
-                    if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Username already taken")),
-                    );
-                    return;
-                  } else {
+                   {
   
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Registered Successfully!")),
@@ -340,6 +354,7 @@ TextButton(
                       context,
                       MaterialPageRoute(builder: (_) => const homePage()),
                     );
+                  }
                   }
                   }
                 },
