@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventplanner/firebase_options.dart';
 import 'package:eventplanner/home.dart';
@@ -53,7 +55,7 @@ Future<void> _pickDate(TextEditingController controller) async {
   final DateTime? picked = await showDatePicker(
     context: context,
     initialDate: DateTime(2016, 1, 1),
-    firstDate: DateTime(1950), // 🚫 No past dates
+    firstDate: DateTime(1960), //  No past dates
     lastDate: DateTime.now(),
   );
 
@@ -151,6 +153,8 @@ Future<void> _pickDate(TextEditingController controller) async {
 
   @override
   Widget build(BuildContext context) {
+
+    
     return Scaffold(
       backgroundColor: AppColors.bg,
       appBar: AppBar(
@@ -334,6 +338,7 @@ TextButton(
                     'createdAt': FieldValue.serverTimestamp(),
                     'DateOfBirth': dateController.text.trim(),
                     'gender': _selectedGender,
+                    'email': emailController.text.trim(),
 
                   });
 
@@ -345,7 +350,6 @@ TextButton(
 
 
                    {
-  
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Registered Successfully!")),
                     );

@@ -1,11 +1,44 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  Future<String> getUsername() async {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  DocumentSnapshot doc = await FirebaseFirestore.instance
+      .collection("users")
+      .doc(user!.uid)
+      .get();
+
+  return doc['username'];
+}
+Future<String> avatar() async {
+  User? user = FirebaseAuth.instance.currentUser;
+
+  DocumentSnapshot doc = await FirebaseFirestore.instance
+      .collection("users")
+      .doc(user!.uid)
+      .get();
+
+  return doc['avatarId'].toString();
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
+
+        User? user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       backgroundColor: AppColors.bg,
 
@@ -22,44 +55,74 @@ class ProfilePage extends StatelessWidget {
           children: [
 
             // 👤 Profile Picture
-            Container(
-              width: 120,
-              height: 120,
-              
-              decoration: BoxDecoration(
-                color: AppColors.mint,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.ink,
-                  width: 3,
-                ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.ink,
-                    offset: Offset(5, 5),
-                    blurRadius: 0,
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: Image.asset(
-                  "assets/imgs/1.png",
+            FutureBuilder(
+              future: avatar(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+
+      return CircularProgressIndicator();
+    }
+    if (snapshot.hasError) {
+      return Text("Error: ${snapshot.error}");
+    }
+
+    if (!snapshot.hasData) {
+      return const Text("No avatar");
+    }
+
+                return Container(
                   width: 120,
                   height: 120,
-                  fit: BoxFit.cover,
-                ),
-              )
+                  
+                  decoration: BoxDecoration(
+                    color: AppColors.mint,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.ink,
+                      width: 3,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.ink,
+                        offset: Offset(5, 5),
+                        blurRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      "assets/imgs/${snapshot.data}.png",
+                      width: 120,
+                      height: 120,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                );
+              }
             ),
 
             const SizedBox(height: 30),
 
             // 🧑 Name Box
-            _profileBox("Name", "Manpriya Laksahan"),
+            FutureBuilder(
+  future: getUsername(),
+  builder: (context, snapshot) {
+    if (!snapshot.hasData) {
+      return CircularProgressIndicator();
+    }
+    
+      return _profileBox("Name", snapshot.data.toString());
+
+  },
+),
 
             const SizedBox(height: 20),
 
             // 📧 Email Box
-            _profileBox("Email", "example@email.com"),
+            _profileBox("Email", user?.email ?? "No Email"),
+            
+            
+
 
             const SizedBox(height: 40),
 

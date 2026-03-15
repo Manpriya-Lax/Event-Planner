@@ -27,7 +27,7 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   Widget build(BuildContext context) {    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  const RegisterPage(),
+      home:  const homePage(),
 
       routes: {
       
