@@ -1,6 +1,6 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eventplanner/emailverify.dart';
 import 'package:eventplanner/firebase_options.dart';
 import 'package:eventplanner/home.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,6 +31,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   
   final List<String> _avatars = [
+
+  "assets/imgs/0.png",
   "assets/imgs/1.png",
   "assets/imgs/2.png",
   "assets/imgs/3.png",
@@ -45,10 +47,10 @@ class _RegisterPageState extends State<RegisterPage> {
   "assets/imgs/12.png",
   "assets/imgs/13.png",
   "assets/imgs/14.png",
-  "assets/imgs/15.png",
+  
 ];
 
-int _selectedAvatarIndex = 0;
+int _selectedAvatarIndex = 1;
 
 
 Future<void> _pickDate(TextEditingController controller) async {
@@ -142,14 +144,7 @@ Future<void> _pickDate(TextEditingController controller) async {
 }
 
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
-    super.dispose();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -310,14 +305,7 @@ TextButton(
                 var instance = FirebaseAuth.instance;
                 print (instance);
 
-                var credential = await instance.createUserWithEmailAndPassword(
-
-                   email: emailController.text.trim(),
-                  password: passwordController.text.trim(),
-                  
-
-                  
-                  );
+                
 
                   final username = nameController.text.trim().toLowerCase();
 
@@ -330,6 +318,15 @@ TextButton(
                     return;
                   }
                   else{
+
+                    var credential = await instance.createUserWithEmailAndPassword(
+
+                   email: emailController.text.trim(),
+                  password: passwordController.text.trim(),
+                  
+
+                  
+                  );
 
 
                   await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
@@ -350,13 +347,9 @@ TextButton(
 
 
                    {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Registered Successfully!")),
-                    );
-
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (_) => const homePage()),
+                      MaterialPageRoute(builder: (_) => const Emailverify()),
                     );
                   }
                   }
@@ -397,7 +390,14 @@ TextButton(
       ),
     );
   }
-
+ @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
   // ✅ Brutal UI TextField
   Widget _brutalField({
     required String hint,

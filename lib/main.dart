@@ -1,5 +1,6 @@
 import 'package:eventplanner/Profile.dart';
 import 'package:eventplanner/add.dart';
+import 'package:eventplanner/emailverify.dart';
 import 'package:eventplanner/friends.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
@@ -27,7 +28,7 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   Widget build(BuildContext context) {    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  const homePage(),
+      home:  const loginPage(),
 
       routes: {
       

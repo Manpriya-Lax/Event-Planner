@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:eventplanner/home.dart';
+import 'package:eventplanner/forgotPW.dart';
 
 
 class loginPage extends StatefulWidget {
@@ -212,10 +213,20 @@ class _loginPageState extends State<loginPage> {
                               ),
                             ),
 
-                            SizedBox(height: 10.0),
-                            Text(
-                              "Forgot password",
-                              style: TextStyle(fontSize: 18.0),
+                            SizedBox(height: 20.0),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const Forgotpw(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Forgot password",
+                                style: TextStyle(fontSize: 18.0 ,color: AppColors.blue),
+                              ),
                             ),
 
                             SizedBox(height: 40.0),
@@ -227,12 +238,7 @@ class _loginPageState extends State<loginPage> {
                             SizedBox(height: 10.0),
                             InkWell(
                               onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => homePage(),
-                                  ),
-                                );
+                                Navigator.pushNamed(context, '/register');
                                
                               },
                              
@@ -283,6 +289,10 @@ class _loginPageState extends State<loginPage> {
           ),
         ),
       ),
+
+      
     );
+    
   }
+  
 }
