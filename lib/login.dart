@@ -29,10 +29,7 @@ class _loginPageState extends State<loginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-
-      home: Scaffold(
+    return  Scaffold(
        backgroundColor: AppColors.bg,
 
         body: Container(
@@ -146,37 +143,25 @@ class _loginPageState extends State<loginPage> {
                 var instance = FirebaseAuth.instance;
                 print (instance);
 
-                var credential = await instance.signInWithEmailAndPassword(
+               try {
+                 final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                   email: emailController.text.trim(),
+                   password: passwordController.text.trim(),
+                 );
 
-                  email: emailController.text.trim(),
-                  password: passwordController.text.trim(),
-                  
-                  
-                  );
+                 if (!mounted) return;
 
-                  print('firebase auth instance: $credential');
-                  var user =credential.user;
-                  print('fire ${user?.uid}');
-  
-                                 
-                                if (credential.user != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("Login Successful!"),
-                                    ),
-                                  );
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/home',
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("Login Failed!"),
-                                    ),
-                                  );
+                 if (credential.user != null) {
+                   Navigator.pushReplacementNamed(context, '/home');
+                 }
+               } on FirebaseAuthException catch (e) {
+                 if (!mounted) return;
 
-                                }
+
+                 ScaffoldMessenger.of(context).showSnackBar(
+                   SnackBar(content: Text("Email or password is incorrect")),
+                 );
+               }
                               }
                               },
 
@@ -216,11 +201,7 @@ class _loginPageState extends State<loginPage> {
                             SizedBox(height: 20.0),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const Forgotpw(),
-                                  ),
+                                Navigator.pushNamed(context, '/forgotpw'
                                 );
                               },
                               child: Text(
@@ -288,10 +269,7 @@ class _loginPageState extends State<loginPage> {
             ),
           ),
         ),
-      ),
-
-      
-    );
+      );
     
   }
   

@@ -10,6 +10,7 @@ import 'package:eventplanner/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -50,42 +51,10 @@ class _RegisterPageState extends State<RegisterPage> {
   
 ];
 
-int _selectedAvatarIndex = 1;
-
-
-Future<void> _pickDate(TextEditingController controller) async {
-  final DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: DateTime(2016, 1, 1),
-    firstDate: DateTime(1960), //  No past dates
-    lastDate: DateTime.now(),
-  );
-
-  if (picked != null) {
-    // Format: DD/MM/YYYY
-    final day = picked.day.toString().padLeft(2, '0');
-    final month = picked.month.toString().padLeft(2, '0');
-    final year = picked.year.toString();
-    controller.text = "$day/$month/$year";
-  }
-}
-
+  int _selectedAvatarIndex = 1;
   bool _hidePassword = true;
   bool _hideConfirmPassword = true;
 
-//  Future<void> _registerUser() async {
-//               try {
-//                 await FirebaseAuth.instance.createUserWithEmailAndPassword(
-//                   email: emailController.text.trim(),
-//                   password: passwordController.text.trim(),
-//                 );
-//               } on FirebaseAuthException catch (e) {
-//                 print("Firebase Error Code: ${e.code}");
-//                 print("Firebase Error Message: ${e.message}");
-//               } catch (e) {
-//                 print("General Error: $e");
-//               }
-//             }
 
             Future<bool> usernameExists(String username) async {
               final result = await FirebaseFirestore.instance
@@ -193,7 +162,7 @@ TextButton(
   child: const Text("Choose Avatar"),
 ),
 
-              _brutalField(
+              BrutalField(
                 hint: "User Name",
                 controller: nameController,
                 keyboardType: TextInputType.name,
@@ -212,7 +181,7 @@ TextButton(
               ),
               const SizedBox(height: 18),
 
-              _brutalField(
+              BrutalField(
                 hint: "Email",
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -233,15 +202,21 @@ TextButton(
                 },
               ),
               const SizedBox(height: 18),
-              _buildDateField("Date (DD/MM/YYYY)", dateController),
 
+              BrutalDateField(
+                hint: "Date Of Birth (DD/MM/YYYY)",
+                controller: dateController,
+                initialDate: DateTime(2016, 1, 1),
+                firstDate: DateTime(1960), //  No past dates
+                lastDate: DateTime.now(),
+              ),
               const SizedBox(height: 18),
               _brutalDropdown(),
 
               const SizedBox(height: 18),
 
 
-              _brutalField(
+              BrutalField(
                 hint: "Password",
                 controller: passwordController,
                 isPassword: true,
@@ -273,7 +248,7 @@ TextButton(
               ),
               const SizedBox(height: 18),
 
-              _brutalField(
+              BrutalField(
                 hint: "Confirm Password",
                 controller: confirmPasswordController,
                 isPassword: true,
@@ -294,7 +269,7 @@ TextButton(
 
               const SizedBox(height: 28),
 
-              _brutalButton(
+              BrutalButton(
                 text: "Create Account",
                 onTap: () async {
                   if (_formKey.currentState?.validate() ?? false) {
@@ -398,122 +373,7 @@ TextButton(
     confirmPasswordController.dispose();
     super.dispose();
   }
-  // ✅ Brutal UI TextField
-  Widget _brutalField({
-    required String hint,
-    required TextEditingController controller,
-    TextInputType keyboardType = TextInputType.text,
-    bool isPassword = false,
-    bool hideText = false,
-    VoidCallback? toggleHide,
-    String? Function(String?)? validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.ink, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.ink,
-            offset: Offset(5, 5),
-            blurRadius: 0,
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: isPassword ? hideText : false,
-        validator: validator,
-        decoration: InputDecoration(
-          hintText: hint,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 15,
-          ),
-          border: InputBorder.none,
-          suffixIcon: isPassword
-              ? IconButton(
-                  onPressed: toggleHide,
-                  icon: Icon(
-                    hideText ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.ink,
-                  ),
-                )
-              : null,
-        ),
-      ),
-    );
-  }
-
-  // ✅ Brutal UI Button
-  Widget _brutalButton({
-    required String text,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.ink, width: 2),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.ink,
-              offset: Offset(5, 5),
-              blurRadius: 0,
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: AppColors.ink,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDateField(String hint, TextEditingController controller) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: AppColors.ink, width: 2),
-      boxShadow: const [
-        BoxShadow(
-          color: AppColors.ink,
-          offset: Offset(5, 5),
-          blurRadius: 0,
-        ),
-      ],
-    ),
-    child: TextFormField(
-      controller: controller,
-      readOnly: true,
-      onTap: () => _pickDate(controller),
-      validator: (value) {
-        if (value == null || value.isEmpty) return "Select a date";
-        return null;
-      },
-      decoration: InputDecoration(
-        hintText: hint,
-        contentPadding: const EdgeInsets.all(15),
-        border: InputBorder.none,
-        suffixIcon: const Icon(Icons.calendar_month),
-      ),
-    ),
-  );
-}
+  
 
 Widget _brutalDropdown() {
   return Container(

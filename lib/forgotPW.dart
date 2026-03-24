@@ -58,7 +58,7 @@ class _ForgotpwState extends State<Forgotpw> {
                     child: Padding(
                       padding: const EdgeInsets.all(30.0),
                       child: 
-                      _brutalField(
+                      BrutalField(
                         hint: "Email",
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -85,7 +85,7 @@ class _ForgotpwState extends State<Forgotpw> {
         
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 85.0),
-                    child: _brutalButton(
+                    child: BrutalButton(
                       text: 'Send Reset Link',
                       onTap: () async{
                         if (_formKey.currentState?.validate() ??
@@ -127,89 +127,5 @@ class _ForgotpwState extends State<Forgotpw> {
     );
   }
 
-  Widget _brutalField({
-    required String hint,
-    required TextEditingController controller,
-    TextInputType keyboardType = TextInputType.text,
-    bool isPassword = false,
-    bool hideText = false,
-    VoidCallback? toggleHide,
-    String? Function(String?)? validator,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.ink, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.ink,
-            offset: Offset(5, 5),
-            blurRadius: 0,
-          ),
-        ],
-      ),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: isPassword ? hideText : false,
-        validator: validator,
-        decoration: InputDecoration(
-          hintText: hint,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 15,
-            vertical: 10,
-          ),
-          border: InputBorder.none,
-          suffixIcon: isPassword
-              ? IconButton(
-                  onPressed: toggleHide,
-                  icon: Icon(
-                    hideText ? Icons.visibility_off : Icons.visibility,
-                    color: AppColors.ink,
-                  ),
-                )
-              : null,
-        ),
-      ),
-    );
-  }
 
-
-   Widget _brutalButton({
-  required String text,
-  required Future<void> Function() onTap,
-}) {
-  return InkWell(
-    onTap: () async {
-      await onTap();
-    },
-    child: Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.ink, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.ink,
-            offset: Offset(5, 5),
-            blurRadius: 0,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: AppColors.ink,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    ),
-  );
-}
 }

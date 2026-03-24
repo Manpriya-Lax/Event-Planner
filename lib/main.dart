@@ -1,6 +1,7 @@
 import 'package:eventplanner/Profile.dart';
 import 'package:eventplanner/add.dart';
 import 'package:eventplanner/emailverify.dart';
+import 'package:eventplanner/forgotPW.dart';
 import 'package:eventplanner/friends.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
@@ -10,6 +11,7 @@ import 'package:eventplanner/setting.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +41,9 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
         "/add": (context) => const AddEventPage(),
         '/friends': (context) => const FriendsPage(),
         "/settings": (context) => const settings(),
+        "/emailverify": (context) => const Emailverify(),
+        "/forgotpw": (context) => const Forgotpw(),
+
         
         
       },
