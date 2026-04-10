@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:eventplanner/login.dart';
 import 'package:eventplanner/theme.dart';
-import 'package:eventplanner/Profile.dart';
-import 'package:eventplanner/add.dart';
-import 'package:eventplanner/friends.dart';
+import 'package:intl/intl.dart';
+
+
+
 class homePage extends StatelessWidget {
   const homePage({super.key});
 
@@ -100,7 +102,8 @@ class homePage extends StatelessWidget {
               children: [
 
   
-                Container(
+              // new events
+ Container(
                   padding: EdgeInsets.all(20) ,
                     height: 350,
                     width: 350,
@@ -127,15 +130,86 @@ class homePage extends StatelessWidget {
 
 
                     
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center ,
+                  child:
                   
-                  
+                   Column(
+                     children: [
+                       Text(" new events", style: TextStyle(fontSize: 18, color: AppColors.ink), textAlign: TextAlign.center,),
+                        SizedBox(height: 20) ,
+               
+   Expanded(
+     child: StreamBuilder<QuerySnapshot>(
+      stream: getEvents(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+     
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(child: Text("No events"));
+        }
+     
+        final events = snapshot.data!.docs;
+     
+        return ListView.builder(
+          itemCount: events.length,
+          itemBuilder: (context, index) {
+            final event = events[index];
+     
+            final name = event['name'];
+            final venue = event['venue'];
+            final dateTime = (event['date'] as Timestamp).toDate();
+            final date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+            final time ="${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+            final description = event['description'];
+     
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.ink, width: 2),
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.ink,
+                    offset: Offset(5, 5),
+                    blurRadius: 0,
                   ),
-                ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+                      Spacer(),
+                      Text("$date at $time", textAlign: TextAlign.right,),
+                    ],
+                  ),
+
+                  SizedBox(height: 5),
+                  Text(venue),
+                ],
+              ),
+            );
+          },
+        );
+      },
+       ),
+   ),
+    ],
+                   )
+),
 
                 SizedBox(height: 20) ,
 
+
+
+            // past events
+
+
                 Container(
                   padding: EdgeInsets.all(20) ,
                     height: 350,
@@ -163,12 +237,70 @@ class homePage extends StatelessWidget {
 
 
                     
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center ,
+                  child:
                   
-                  
+                   Column(
+                     children: [
+                       Text(" past events", style: TextStyle(fontSize: 18, color: AppColors.ink), textAlign: TextAlign.center,),
+                        SizedBox(height: 20) ,
+               
+   Expanded(
+     child: StreamBuilder<QuerySnapshot>(
+      stream: getEvents(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+     
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(child: Text("No events"));
+        }
+     
+        final events = snapshot.data!.docs;
+     
+        return ListView.builder(
+          itemCount: events.length,
+          itemBuilder: (context, index) {
+            final event = events[index];
+     
+            final name = event['name'];
+            final venue = event['venue'];
+            final date = (event['date'] as Timestamp).toDate();
+     
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.ink, width: 2),
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.ink,
+                    offset: Offset(5, 5),
+                    blurRadius: 0,
                   ),
-                ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 5),
+                  Text(venue),
+                  SizedBox(height: 5),
+                  Text("${date.day}/${date.month}/${date.year}"),
+                ],
+              ),
+            );
+          },
+        );
+      },
+       ),
+   ),
+    ],
+                   )
+),
 
                 
 
@@ -198,4 +330,20 @@ class homePage extends StatelessWidget {
       ),
     );
   }
+
+
+  Stream<QuerySnapshot> getEvents() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return Stream.empty();
+      print("no data");
+    }
+    return FirebaseFirestore.instance
+        .collection('events')
+        .where('ownerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .orderBy('date', descending: true)
+        .snapshots();
+        print("data fetched");
+  }
+  
 }

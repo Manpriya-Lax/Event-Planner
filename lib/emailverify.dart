@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
-import 'package:eventplanner/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Emailverify extends StatefulWidget {

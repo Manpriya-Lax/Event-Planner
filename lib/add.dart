@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 
@@ -18,53 +20,9 @@ class _AddEventPageState extends State<AddEventPage> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
- 
-
-Future<void> _pickTime(TextEditingController controller) async {
-  final TimeOfDay? picked = await showTimePicker(
-    context: context,
-    initialTime: TimeOfDay.now(),
-  );
-
-  if (picked != null) {
-    final h = picked.hour.toString().padLeft(2, '0');
-    final m = picked.minute.toString().padLeft(2, '0');
-    controller.text = "$h:$m";
-  }
-}
+  
 
 
-Widget _buildTimeField(String hint, TextEditingController controller) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: AppColors.ink, width: 2),
-      boxShadow: const [
-        BoxShadow(
-          color: AppColors.ink,
-          offset: Offset(5, 5),
-          blurRadius: 0,
-        ),
-      ],
-    ),
-    child: TextFormField(
-      controller: controller,
-      readOnly: true,
-      onTap: () => _pickTime(controller),
-      validator: (value) {
-        if (value == null || value.isEmpty) return "Select a time";
-        return null;
-      },
-      decoration: InputDecoration(
-        hintText: hint,
-        contentPadding: const EdgeInsets.all(15),
-        border: InputBorder.none,
-        suffixIcon: const Icon(Icons.access_time),
-      ),
-    ),
-  );
-}
 
   @override
   Widget build(BuildContext context) {
@@ -109,14 +67,121 @@ Widget _buildTimeField(String hint, TextEditingController controller) {
               BrutalButton(
                 text: "Add Event",
                 onTap: () async {
-                  Navigator.pushReplacementNamed(context, "/home");
+                  if (_formKey.currentState!.validate()) {
+                    try {
+    final dateParts = dateController.text.split('/');
+    final day = int.parse(dateParts[0]);
+    final month = int.parse(dateParts[1]);
+    final year = int.parse(dateParts[2]);
+      final timeParts = timeController.text.split(':');
+      final hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+
+      final eventDateTime = DateTime(
+        year,
+        month,
+        day,
+        hour,
+        minute,
+      );
+
+      await addEvent(
+        name: nameController.text.trim(),
+        description: descriptionController.text.trim(),
+        venue: locationController.text.trim(),
+        eventDate: eventDateTime,
+      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Event added successfully!")),
+                      );
+                      Navigator.pop(context);
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Error adding event: $e")),
+                      );
+                    }
+                  }
                 },
               ),
             ],
+
+
           ),
         ),
       ),
     );
   }
+
+Future<void> addEvent({
+  required String name,
+  required String description,
+  required String venue,
+  required DateTime eventDate,
+}) async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) {
+    throw Exception("User not logged in");
+  }
+
+  await FirebaseFirestore.instance.collection('events').add({
+    'ownerId': user.uid,
+    'name': name,
+    'description': description,
+    'venue': venue,
+    'date': Timestamp.fromDate(eventDate),
+    'isPublic': false,
+    'createdAt': FieldValue.serverTimestamp(),
+  });
+}
+
+
+
+
+           // time controller
+Future<void> _pickTime(TextEditingController controller) async {
+  final TimeOfDay? picked = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.now(),
+  );
+
+  if (picked != null) {
+    final h = picked.hour.toString().padLeft(2, '0');
+    final m = picked.minute.toString().padLeft(2, '0');
+    controller.text = "$h:$m";
+  }
+}
+Widget _buildTimeField(String hint, TextEditingController controller) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: AppColors.ink, width: 2),
+      boxShadow: const [
+        BoxShadow(
+          color: AppColors.ink,
+          offset: Offset(5, 5),
+          blurRadius: 0,
+        ),
+      ],
+    ),
+    child: TextFormField(
+      controller: controller,
+      readOnly: true,
+      onTap: () => _pickTime(controller),
+      validator: (value) {
+        if (value == null || value.isEmpty) return "Select a time";
+        return null;
+      },
+      decoration: InputDecoration(
+        hintText: hint,
+        contentPadding: const EdgeInsets.all(15),
+        border: InputBorder.none,
+        suffixIcon: const Icon(Icons.access_time),
+      ),
+    ),
+  );
+}
 
 }
