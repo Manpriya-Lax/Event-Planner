@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AppColors {
@@ -246,5 +248,142 @@ class BrutalDateField extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class DisplayEvent extends StatelessWidget {
+  final String type;
+
+  const DisplayEvent({
+    super.key,
+    required this.type,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return  Container(
+                  padding: EdgeInsets.all(20) ,
+                    height: 350,
+                    width: 350,
+
+                    decoration: BoxDecoration(
+                      color: AppColors.mint,
+                        borderRadius: BorderRadius.circular(20),
+
+                       border: Border.all(
+                        color: AppColors.ink,
+                        width: 2,
+                        ),
+
+                         boxShadow: const [
+                         BoxShadow(
+                         color: AppColors.ink,
+                         offset: Offset(5, 5), // X and Y shadow position
+                        blurRadius: 0,        // IMPORTANT: 0 for brutalism
+                          ),
+                        ],
+
+
+                    ),
+
+
+                    
+                  child:
+                  
+                   Column(
+                     children: [
+                       Text(" $type events", style: TextStyle(fontSize: 18, color: AppColors.ink), textAlign: TextAlign.center,),
+                        SizedBox(height: 20) ,
+               
+   Expanded(
+     child: StreamBuilder<QuerySnapshot>(
+      stream: getEvents(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+     
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(child: Text("No events"));
+        }
+     
+        final events = snapshot.data!.docs;
+     
+        return ListView.builder(
+          itemCount: events.length,
+          itemBuilder: (context, index) {
+            final event = events[index];
+     
+            final name = event['name'];
+            final venue = event['venue'];
+            final dateTime = (event['date'] as Timestamp).toDate();
+            final date = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+            final time ="${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
+            final description = event['description'];
+     
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: 5),
+              padding: EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.ink, width: 2),
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.ink,
+                    offset: Offset(2, 2),
+                    blurRadius: 0,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+                      Spacer(),
+                      Text("$date at $time", textAlign: TextAlign.right,),
+                    ],
+                  ),
+
+                  SizedBox(height: 5),
+                  Text(venue),
+                ],
+              ),
+            );
+          },
+        );
+      },
+       ),
+   ),
+    ],
+                   )
+);
+
+  }
+  Stream<QuerySnapshot> getEvents() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return Stream.empty();
+      print("no data");
+    }
+
+    if (type == "New") {
+      return FirebaseFirestore.instance
+      .collection('events')
+      .where('ownerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .where('date', isGreaterThan: Timestamp.fromDate(DateTime.now()))
+      .orderBy('date', descending: true)
+      .snapshots();
+        print("data fetched");
+    } else {
+       return FirebaseFirestore.instance
+      .collection('events')
+      .where('ownerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .where('date', isLessThan: Timestamp.fromDate(DateTime.now()))
+      .orderBy('date', descending: true)
+      .snapshots();
+    }
   }
 }
