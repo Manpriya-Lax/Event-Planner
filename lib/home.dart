@@ -82,7 +82,7 @@ class homePage extends StatelessWidget {
       ),
       title: Align(
         alignment: Alignment.centerRight,
-        child: Text("Home${app.name}"),
+        child: Text("Home"),
       ),
 
      

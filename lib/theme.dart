@@ -71,6 +71,8 @@ ThemeData softNeoTheme() {
 }
 
 
+            // text feild 
+
 class BrutalField extends StatelessWidget {
   final String hint;
   final TextEditingController controller;
@@ -133,6 +135,9 @@ class BrutalField extends StatelessWidget {
   }
 }
 
+
+            // button feild 
+
 class BrutalButton extends StatelessWidget {
   final String text;
   final Future<void> Function() onTap;
@@ -178,6 +183,8 @@ class BrutalButton extends StatelessWidget {
     );
   }
 }
+
+            // data feild 
 
 class BrutalDateField extends StatelessWidget {
   final String hint;
@@ -251,6 +258,10 @@ class BrutalDateField extends StatelessWidget {
   }
 }
 
+
+
+            // event  feild , home page
+
 class DisplayEvent extends StatelessWidget {
   final String type;
 
@@ -283,13 +294,8 @@ class DisplayEvent extends StatelessWidget {
                           ),
                         ],
 
-
-                    ),
-
-
-                    
+                    ),                    
                   child:
-                  
                    Column(
                      children: [
                        Text(" $type events", style: TextStyle(fontSize: 18, color: AppColors.ink), textAlign: TextAlign.center,),
@@ -313,6 +319,7 @@ class DisplayEvent extends StatelessWidget {
           itemCount: events.length,
           itemBuilder: (context, index) {
             final event = events[index];
+            final eventId = event.id;
      
             final name = event['name'];
             final venue = event['venue'];
@@ -321,36 +328,246 @@ class DisplayEvent extends StatelessWidget {
             final time ="${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
             final description = event['description'];
      
-            return Container(
-              margin: EdgeInsets.symmetric(vertical: 5),
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.ink, width: 2),
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.ink,
-                    offset: Offset(2, 2),
-                    blurRadius: 0,
-                  ),
-                ],
+     
+            // gesture detector feild 
+
+            return GestureDetector(
+              child: Container(
+                margin: EdgeInsets.symmetric(vertical: 5),
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.ink, width: 2),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.ink,
+                      offset: Offset(2, 2),
+                      blurRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+                        Spacer(),
+                        Text("$date at $time", textAlign: TextAlign.right,),
+                      ],
+                    ),
+              
+                    SizedBox(height: 5),
+                    Text(venue),
+                  ],
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-                      Spacer(),
-                      Text("$date at $time", textAlign: TextAlign.right,),
+
+
+              // fist dialog feild
+
+              
+              onTap: 
+              () {
+                if (type == "New") {
+                showDialog(
+                  context: context,
+                  builder: (context) =>  AlertDialog(
+                     backgroundColor: AppColors.bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: AppColors.ink,
+          width: 3,
+        ),
+      ),
+      shadowColor: AppColors.ink,
+      
+      elevation: 10,
+
+                    title: Text(name),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Venue: $venue"),
+                        SizedBox(height: 5),
+                        Text("Date: $date"),
+                        SizedBox(height: 5),
+                        Text("Time: $time"),
+                        SizedBox(height: 10),
+                        Text(description),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: (){
+
+
+                          Navigator.pop(context); 
+                         showDialog(
+                  context: context,
+                  builder: (context) =>  AlertDialog(
+                     backgroundColor: AppColors.bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: AppColors.ink,
+          width: 3,
+        ),
+      ),
+      shadowColor: AppColors.ink,
+      
+      elevation: 10,
+
+                    title: Text("Do you want to cancel this event?"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: ()async {
+              await FirebaseFirestore.instance
+                  .collection('events')
+                  .doc(eventId)
+                  .delete();
+
+              Navigator.pop(context); // close confirm dialog
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Event deleted")),
+              );
+            },
+                        child: Text("Yes"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("No"),
+                      ),
                     ],
                   ),
+                   
+              
+            );
+                        },
 
-                  SizedBox(height: 5),
-                  Text(venue),
-                ],
-              ),
+                        child: Text("Cancle event"),
+                      ),
+              
+
+
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Close"),
+                      ),
+                    ],
+                  ),
+                   
+              
+            );
+             
+              } else {showDialog(
+                  context: context,
+                  builder: (context) =>  AlertDialog(
+                     backgroundColor: AppColors.bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: AppColors.ink,
+          width: 3,
+        ),
+      ),
+      shadowColor: AppColors.ink,
+      
+      elevation: 10,
+
+                    title: Text(name),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Venue: $venue"),
+                        SizedBox(height: 5),
+                        Text("Date: $date"),
+                        SizedBox(height: 5),
+                        Text("Time: $time"),
+                        SizedBox(height: 10),
+                        Text(description),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: (){
+
+
+                          Navigator.pop(context); 
+                         showDialog(
+                  context: context,
+                  builder: (context) =>  AlertDialog(
+                     backgroundColor: AppColors.bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: AppColors.ink,
+          width: 3,
+        ),
+      ),
+      shadowColor: AppColors.ink,
+      
+      elevation: 10,
+
+                    title: Text("Do you want to delete this event?"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: ()async {
+              await FirebaseFirestore.instance
+                  .collection('events')
+                  .doc(eventId)
+                  .delete();
+
+              Navigator.pop(context); // close confirm dialog
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Event deleted")),
+              );
+            },
+                        //delete event function here
+                        child: Text("Yes"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("No"),
+                      ),
+                    ],
+                  ),
+                   
+              
+            );
+                        },
+
+                        child: Text("delete event"),
+                      ),
+              
+
+
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Close"),
+                      ),
+                    ],
+                  ),
+                   
+              
+            );}
+             },
             );
           },
         );
