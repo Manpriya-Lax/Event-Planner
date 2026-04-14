@@ -113,10 +113,8 @@ class _FriendsPageState extends State<FriendsPage> {
       // ✅ Optional: Add Friend button (for later)
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Later: Open Add Friend page / search users / send request
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Add Friend (coming soon)")),
-          );
+          Navigator.pushNamed(context, "/invite");
+          
         },
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.person_add),
