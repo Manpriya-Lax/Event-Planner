@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -63,45 +65,43 @@ class _FriendsPageState extends State<FriendsPage> {
             const SizedBox(height: 16),
 
             Expanded(
-              child: list.isEmpty
-                  ? Center(
-                      child: Text(
-                        "No friends found",
-                        style: TextStyle(
-                          color: AppColors.ink,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  : ListView.separated(
-                      itemCount: list.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final friend = list[index];
-                        final name = friend["name"] ?? "";
-                        final email = friend["email"] ?? "";
+  child: StreamBuilder<QuerySnapshot>(
+    stream: getFriends(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-                        return _friendTile(
-                          name: name,
-                          email: email,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => FriendDetailsPage(
-                                  name: name,
-                                  email: email,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
+      if (snapshot.hasError) {
+        return Center(child: Text("Error: ${snapshot.error}"));
+      }
 
-                   
-            ),
+      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        return const Center(child: Text("No friends"));
+      }
+
+      final friends = snapshot.data!.docs;
+
+      return ListView.separated(
+        itemCount: friends.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final friendDoc = friends[index];
+
+          final name = friendDoc['username'] ?? "No Name";
+
+          return FriendTile(
+            name: name,
+            type: 'friends',
+            onTap: () {
+              // open friend details later
+            },
+          );
+        },
+      );
+    },
+  ),
+),
           ],
         ),
 
@@ -150,161 +150,18 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-  
+  Stream<QuerySnapshot> getFriends() {
+  final currentUser = FirebaseAuth.instance.currentUser;
 
-  Widget _friendTile({
-    required String name,
-    required String email,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.mint,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.ink, width: 2),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.ink,
-              offset: Offset(5, 5),
-              blurRadius: 0,
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            _avatar(name),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    email,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right),
-          ],
-        ),
-      ),
-    );
+  if (currentUser == null) {
+    return const Stream.empty();
   }
 
-  Widget _avatar(String name) {
-    final letter = name.isNotEmpty ? name.trim()[0].toUpperCase() : "?";
-    return Container(
-      width: 46,
-      height: 46,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.ink, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.ink,
-            offset: Offset(3, 3),
-            blurRadius: 0,
-          ),
-        ],
-      ),
-      child: Text(
-        letter,
-        style: TextStyle(
-          color: AppColors.ink,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUser.uid)
+      .collection('friends')
+     // .orderBy('addedAt', descending: true)
+      .snapshots();
 }
-
-class FriendDetailsPage extends StatelessWidget {
-  final String name;
-  final String email;
-
-  const FriendDetailsPage({
-    super.key,
-    required this.name,
-    required this.email,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title: const Text("Friend"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.mint,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.ink, width: 2),
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.ink,
-                    offset: Offset(5, 5),
-                    blurRadius: 0,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    email,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Friend actions (unfriend/block) can be added later.",
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

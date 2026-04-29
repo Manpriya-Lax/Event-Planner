@@ -583,7 +583,6 @@ class DisplayEvent extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       return Stream.empty();
-      print("no data");
     }
 
     if (type == "New") {
@@ -593,7 +592,6 @@ class DisplayEvent extends StatelessWidget {
       .where('date', isGreaterThan: Timestamp.fromDate(DateTime.now()))
       .orderBy('date', descending: true)
       .snapshots();
-        print("data fetched");
     } else {
        return FirebaseFirestore.instance
       .collection('events')
@@ -614,11 +612,17 @@ class DisplayEvent extends StatelessWidget {
 class FriendTile extends StatelessWidget {
   final String name;
   final VoidCallback onTap;
+  final String? type;
+    final VoidCallback? onAccept;
+  final VoidCallback? onDecline;
 
   const FriendTile({
     super.key,
     required this.name,
     required this.onTap,
+    required this.type,
+    this.onAccept,
+    this.onDecline,
   });
 
   @override
@@ -661,7 +665,8 @@ class FriendTile extends StatelessWidget {
                 ],
               ),
             ),
-
+            
+              if (type == "add") 
             Container(
               width: 45,
               height: 45,
@@ -680,7 +685,44 @@ class FriendTile extends StatelessWidget {
                 Icons.person_add,
                 color: AppColors.ink,
               ),
-            ),
+            )
+              
+          else if (type == "request") 
+                Row(
+  children: [
+    IconButton(
+      icon: const Icon(Icons.check),
+      onPressed: onAccept,
+    ),
+    IconButton(
+      icon: const Icon(Icons.close),
+      onPressed: onDecline,
+    ),
+  ],
+)
+                
+              
+              else if (type == "friends") 
+                Container(
+                  width: 45,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    color: AppColors.yellow,
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.ink,
+                        offset: Offset(3, 3),
+                        blurRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: AppColors.ink,
+                  ),
+                )
+              
           ],
         ),
 

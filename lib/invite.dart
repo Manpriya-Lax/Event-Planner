@@ -96,11 +96,10 @@ class _InvitePageState extends State<InvitePage> {
               
                 return FriendTile(
                   name: userDoc['username'] ?? "No Name",
+                  type: 'add',
                   onTap: () {
                     sendFriendRequest(userDoc.id);
-                    SnackBar snackBar = const SnackBar(content: Text("Friend request sent"));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
+                  }, 
                 );
               
               }

@@ -11,7 +11,7 @@ class RequestsPage extends StatefulWidget {
 }
 
 class _RequestsPageState extends State<RequestsPage> {
-  String _query = "";
+ 
 
 
   @override
@@ -45,60 +45,76 @@ class _RequestsPageState extends State<RequestsPage> {
  const SizedBox(height: 16),
 
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: getRequests(),
-                builder: (context, snapshot) {
+              
+              child: Expanded(
+  child: StreamBuilder<QuerySnapshot>(
+    stream: getRequests(),
+    builder: (context, snapshot) {
 
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-                  if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}");
-                  }
+      if (snapshot.hasError) {
+        return Text("Error: ${snapshot.error}");
+      }
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text("No requests"));
-                  }
+      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        return const Center(child: Text("No requests"));
+      }
 
-                  final requests = snapshot.data!.docs;
+      final requests = snapshot.data!.docs;
 
-                  return ListView.builder(
-                    itemCount: requests.length,
-                    itemBuilder: (context, index) {
-                      final request = requests[index];
-                      final fromUid = request['fromUid'];
+      return ListView.builder(
+        itemCount: requests.length,
+        itemBuilder: (context, index) {
+          final request = requests[index];
+          final fromUid = request['fromUid'];
+          final requestId = request.id;
 
-                      return FutureBuilder<DocumentSnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(fromUid)
-                            .get(),
-                        builder: (context, userSnap) {
-                          if (!userSnap.hasData) {
-                            return const SizedBox(height: 5);
-                          }
 
-                          final user = userSnap.data!;
+          return FutureBuilder<DocumentSnapshot>(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(fromUid)
+                .get(),
+            builder: (context, userSnap) {
 
-                          return FriendTile(
-                            name: user['username'] ?? "No Name",
-                            onTap: () {},
-                          );
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            )          ],
+              if (!userSnap.hasData) {
+                return const SizedBox( height: 5,);
+              }
+
+              final user = userSnap.data!;
+
+              return FriendTile(
+                name: user['username'] ?? "No Name",
+                type: 'request',
+                
+                onTap: () {},
+
+                
+                   onAccept: () async {
+                  await acceptRequest(
+                  requestId: requestId,
+                   fromUid: fromUid,
+                    );
+                  },
+                     onDecline: () async {
+                    await declineRequest(requestId);
+                  },
+              );
+            },
+          );
+        },
+      );
+      
+    },
+  ),
+)
+            )  
+  ],
         ),
       ),
-      
-  
-    
-
-      
     );
   }
 
@@ -113,7 +129,46 @@ class _RequestsPageState extends State<RequestsPage> {
 
 }
 
+Future <void> acceptRequest(
+  { required String requestId, 
+   required String fromUid,}
+   ) async
+{
+ 
+  final currentUid = FirebaseAuth.instance.currentUser!.uid;
+  final firestore = FirebaseFirestore.instance;
+  
+  await firestore.runTransaction((transaction) async {
 
+    final requestRef = firestore.collection('friend_requests').doc(requestId);
+
+    final friendRef = firestore.
+    collection('users')
+    .doc(currentUid)
+    .collection('friends')
+    .doc(fromUid)
+    ;
+
+ final thairfriendRef = firestore.
+    collection('users')
+    .doc(fromUid)
+    .collection('friends')
+    .doc(currentUid)
+    ;
+
+    transaction.set(friendRef, {'uid': fromUid});
+    transaction.set(thairfriendRef, {'uid': currentUid});
+    transaction.update(requestRef, {'status': 'accepted'});
+  });
+
+
+}
+
+Future <void> declineRequest(String requestId) async
+{
+  final firestore = FirebaseFirestore.instance;
+  await firestore.collection('friend_requests').doc(requestId).update({'status': 'declined'});
+}
 
 }
 
