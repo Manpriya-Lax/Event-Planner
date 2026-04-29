@@ -604,3 +604,118 @@ class DisplayEvent extends StatelessWidget {
     }
   }
 }
+
+
+
+      // search box feild  
+
+
+      //friend tile 
+class FriendTile extends StatelessWidget {
+  final String name;
+  final VoidCallback onTap;
+
+  const FriendTile({
+    super.key,
+    required this.name,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.mint,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.ink, width: 2),
+          boxShadow: const [
+            BoxShadow(
+              color: AppColors.ink,
+              offset: Offset(5, 5),
+              blurRadius: 0,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            _avatar(name),
+            const SizedBox(width: 14),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10,),
+                  Text(
+                    name,
+                    style: TextStyle(
+                      color: AppColors.ink,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                
+                ],
+              ),
+            ),
+
+            Container(
+              width: 45,
+              height: 45,
+              decoration: BoxDecoration(
+                color: AppColors.yellow,
+                shape: BoxShape.circle,
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.ink,
+                    offset: Offset(3, 3),
+                    blurRadius: 0,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.person_add,
+                color: AppColors.ink,
+              ),
+            ),
+          ],
+        ),
+
+      ),
+
+    );
+  }
+
+  Widget _avatar(String name) {
+    final letter = name.isNotEmpty ? name.trim()[0].toUpperCase() : "?";
+
+    return Container(
+      width: 46,
+      height: 46,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.ink, width: 2),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.ink,
+            offset: Offset(3, 3),
+            blurRadius: 0,
+          ),
+        ],
+      ),
+      child: Text(
+        letter,
+        style: TextStyle(
+          color: AppColors.ink,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}

@@ -4,6 +4,7 @@ import 'package:eventplanner/emailverify.dart';
 import 'package:eventplanner/forgotPW.dart';
 import 'package:eventplanner/friends.dart';
 import 'package:eventplanner/invite.dart';
+import 'package:eventplanner/requests.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
 import 'package:eventplanner/home.dart';
@@ -45,6 +46,7 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
         "/emailverify": (context) => const Emailverify(),
         "/forgotpw": (context) => const Forgotpw(),
         "/invite": (context) => const InvitePage(),
+        "/requests": (context) => const RequestsPage(),
 
         
         

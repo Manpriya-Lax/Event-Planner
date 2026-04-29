@@ -13,11 +13,6 @@ class _FriendsPageState extends State<FriendsPage> {
 
   // ✅ Temporary sample data (replace later with Firebase)
   final List<Map<String, String>> _friends = [
-    {"name": "Alex Perera", "email": "alex@email.com"},
-    {"name": "Nimal Silva", "email": "nimal@email.com"},
-    {"name": "Sahan Fernando", "email": "sahan@email.com"},
-    {"name": "Kavindu Jay", "email": "kavindu@email.com"},
-    {"name": "Tharindu Sen", "email": "tharindu@email.com"},
   ];
 
   String _query = "";
@@ -65,7 +60,6 @@ class _FriendsPageState extends State<FriendsPage> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            _searchBox(),
             const SizedBox(height: 16),
 
             Expanded(
@@ -105,61 +99,58 @@ class _FriendsPageState extends State<FriendsPage> {
                         );
                       },
                     ),
+
+                   
             ),
           ],
         ),
+
       ),
 
-      // ✅ Optional: Add Friend button (for later)
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, "/invite");
-          
-        },
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.person_add),
+
+
+
+      
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+  crossAxisAlignment: CrossAxisAlignment.end,
+  children: [
+    FloatingActionButton.extended(
+      heroTag: "Add Friend",
+      onPressed: (){
+        Navigator.pushNamed(context, "/invite");
+
+      },
+      backgroundColor: AppColors.mint,
+      label: Text("Add Friend"),
+      icon: Icon(Icons.person_add_alt_1),
+
+
       ),
+
+      SizedBox(height: 12),
+
+      FloatingActionButton.extended(
+      heroTag: "Requests",
+      onPressed: (){
+        Navigator.pushNamed(context, "/requests");
+
+      },
+      backgroundColor: AppColors.mint,
+      label: Text("Requests"),
+      icon: Icon(Icons.person_add),
+
+
+      ),
+
+  ],
+
+      ),
+     
     );
   }
 
-  Widget _searchBox() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.ink, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.ink,
-            offset: Offset(5, 5),
-            blurRadius: 0,
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (v) => setState(() => _query = v),
-        decoration: InputDecoration(
-          hintText: "Search friends",
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: _query.isEmpty
-              ? null
-              : IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() => _query = "");
-                  },
-                ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-          border: InputBorder.none,
-        ),
-      ),
-    );
-  }
+  
 
   Widget _friendTile({
     required String name,

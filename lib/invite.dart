@@ -94,14 +94,12 @@ class _InvitePageState extends State<InvitePage> {
                 }
                 
               
-                return _friendTile(
+                return FriendTile(
                   name: userDoc['username'] ?? "No Name",
-                  email: userDoc['email'] ?? "No Email",
                   onTap: () {
-                    // Later: Send friend request or open user details
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Invite ${userDoc['name']} (coming soon)")),
-                    );
+                    sendFriendRequest(userDoc.id);
+                    SnackBar snackBar = const SnackBar(content: Text("Friend request sent"));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
                 );
               
@@ -155,89 +153,6 @@ class _InvitePageState extends State<InvitePage> {
     );
   }
 
-  Widget _friendTile({
-    required String name,
-    required String email,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.mint,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.ink, width: 2),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.ink,
-              offset: Offset(5, 5),
-              blurRadius: 0,
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            _avatar(name),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    email,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _avatar(String name) {
-    final letter = name.isNotEmpty ? name.trim()[0].toUpperCase() : "?";
-    return Container(
-      width: 46,
-      height: 46,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.ink, width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.ink,
-            offset: Offset(3, 3),
-            blurRadius: 0,
-          ),
-        ],
-      ),
-      child: Text(
-        letter,
-        style: TextStyle(
-          color: AppColors.ink,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
   Stream<QuerySnapshot> searchUser()
 {
   
@@ -255,79 +170,17 @@ class _InvitePageState extends State<InvitePage> {
 }
 
 
+Future<void> sendFriendRequest(String targetUid) async {
+  final currentUser = FirebaseAuth.instance.currentUser;
 
-}
+  if (currentUser == null) return;
 
-class FriendDetailsPage extends StatelessWidget {
-  final String name;
-  final String email;
-
-  const FriendDetailsPage({
-    super.key,
-    required this.name,
-    required this.email,
+  await FirebaseFirestore.instance.collection('friend_requests').add({
+    'fromUid': currentUser.uid,
+    'toUid': targetUid,
+    'status': 'pending',
+    'createdAt': FieldValue.serverTimestamp(),
   });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title: const Text("Friend"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.mint,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.ink, width: 2),
-                boxShadow: const [
-                  BoxShadow(
-                    color: AppColors.ink,
-                    offset: Offset(5, 5),
-                    blurRadius: 0,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    email,
-                    style: TextStyle(
-                      color: AppColors.ink,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Friend actions (unfriend/block) can be added later.",
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-
 }
+}
+
