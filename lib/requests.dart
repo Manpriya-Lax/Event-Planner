@@ -138,6 +138,16 @@ Future <void> acceptRequest(
   final currentUid = FirebaseAuth.instance.currentUser!.uid;
   final firestore = FirebaseFirestore.instance;
   
+    final currentUserSnap =
+      await firestore.collection('users').doc(currentUid).get();
+
+  final fromUserSnap =
+      await firestore.collection('users').doc(fromUid).get();
+
+        final currentUsername = currentUserSnap['username'] ?? "No Name";
+  final fromUsername = fromUserSnap['username'] ?? "No Name";
+
+
   await firestore.runTransaction((transaction) async {
 
     final requestRef = firestore.collection('friend_requests').doc(requestId);
@@ -156,8 +166,15 @@ Future <void> acceptRequest(
     .doc(currentUid)
     ;
 
-    transaction.set(friendRef, {'uid': fromUid});
-    transaction.set(thairfriendRef, {'uid': currentUid});
+    transaction.set(friendRef, 
+    {'uid': fromUid,
+    'username': fromUsername,
+    'addedAt': FieldValue.serverTimestamp(),
+    });
+    transaction.set(thairfriendRef, 
+    {'uid': currentUid,
+    'username': currentUsername,
+    'addedAt': FieldValue.serverTimestamp(),});
     transaction.update(requestRef, {'status': 'accepted'});
   });
 
