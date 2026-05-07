@@ -19,7 +19,11 @@ class _AddEventPageState extends State<AddEventPage> {
   final TextEditingController timeController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final currentUid = FirebaseAuth.instance.currentUser!.uid;
+ 
 
+List<String> ParticipantId = [];
+List<String> ParticipantName = [];
   
 
 
@@ -64,6 +68,65 @@ class _AddEventPageState extends State<AddEventPage> {
               BrutalField(hint: "Description", controller: descriptionController),
               const SizedBox(height: 40),
 
+              const SizedBox(height: 20),
+
+const Align(
+  alignment: Alignment.centerLeft,
+  child: Text(
+    "Add Participants",
+    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  ),
+),
+
+StreamBuilder<QuerySnapshot>(
+  stream: FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUid)
+      .collection('friends')
+      .snapshots(),
+  builder: (context, snapshot) {
+    if (!snapshot.hasData) {
+      return const CircularProgressIndicator();
+    }
+
+    final friends = snapshot.data!.docs;
+
+    if (friends.isEmpty) {
+      return const Text("No friends found");
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: friends.length,
+      itemBuilder: (context, index) {
+        final friend = friends[index];
+        final friendUid = friend.id;
+        final username = friend['username'] ?? 'No Name';
+
+        final isSelected = ParticipantId.contains(friendUid);
+
+        return CheckboxListTile(
+          title: Text(username),
+          value: isSelected,
+          onChanged: (value) {
+            setState(() {
+              if (value == true) {
+                ParticipantId.add(friendUid);
+                ParticipantName.add(username);
+              } else {
+                ParticipantId.remove(friendUid);
+                ParticipantName.remove(username);
+              }
+            });
+          },
+        );
+      },
+    );
+  },
+),
+              const SizedBox(height: 40),
+
               BrutalButton(
                 text: "Add Event",
                 onTap: () async {
@@ -90,6 +153,8 @@ class _AddEventPageState extends State<AddEventPage> {
         description: descriptionController.text.trim(),
         venue: locationController.text.trim(),
         eventDate: eventDateTime,
+       // puid:,
+
       );
 
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -118,9 +183,12 @@ Future<void> addEvent({
   required String description,
   required String venue,
   required DateTime eventDate,
+  //required String puid,
 }) async {
   final user = FirebaseAuth.instance.currentUser;
-
+  final participants = [currentUid, ...ParticipantId];
+  final username = await getCurrentUsername();
+  final participantsnames = [username, ...ParticipantName];
   if (user == null) {
     throw Exception("User not logged in");
   }
@@ -131,13 +199,23 @@ Future<void> addEvent({
     'description': description,
     'venue': venue,
     'date': Timestamp.fromDate(eventDate),
-    'isPublic': false,
+    'participantid': participants,
+    'participantsnames': participantsnames,
     'createdAt': FieldValue.serverTimestamp(),
   });
 }
 
 
+Future<String> getCurrentUsername() async {
+  final currentUid = FirebaseAuth.instance.currentUser!.uid;
 
+  final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(currentUid)
+      .get();
+
+  return doc['username'] ?? 'No Name';
+}
 
            // time controller
 Future<void> _pickTime(TextEditingController controller) async {

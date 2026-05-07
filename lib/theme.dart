@@ -328,7 +328,8 @@ class DisplayEvent extends StatelessWidget {
             final time ="${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
             final description = event['description'];
      
-     
+            final participants =List<String>.from(event['participantsnames'] ?? []);
+             
             // gesture detector feild 
 
             return GestureDetector(
@@ -398,6 +399,7 @@ class DisplayEvent extends StatelessWidget {
                         Text("Time: $time"),
                         SizedBox(height: 10),
                         Text(description),
+                        Text("participants: ${participants.join(", ")}"),
                       ],
                     ),
                     actions: [
@@ -496,6 +498,10 @@ class DisplayEvent extends StatelessWidget {
                         Text("Time: $time"),
                         SizedBox(height: 10),
                         Text(description),
+                        SizedBox(height: 20),
+
+                        Text("participants: ${participants.join(", ")}"),
+
                       ],
                     ),
                     actions: [
@@ -584,23 +590,27 @@ class DisplayEvent extends StatelessWidget {
     if (user == null) {
       return Stream.empty();
     }
+       final currentUid = user.uid;
+  final now = Timestamp.fromDate(DateTime.now());
 
-    if (type == "New") {
-      return FirebaseFirestore.instance
-      .collection('events')
-      .where('ownerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-      .where('date', isGreaterThan: Timestamp.fromDate(DateTime.now()))
-      .orderBy('date', descending: true)
-      .snapshots();
-    } else {
-       return FirebaseFirestore.instance
-      .collection('events')
-      .where('ownerId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-      .where('date', isLessThan: Timestamp.fromDate(DateTime.now()))
-      .orderBy('date', descending: true)
-      .snapshots();
-    }
+  if (type == "New") {
+    return FirebaseFirestore.instance
+        .collection('events')
+        .where('participantid', arrayContains: currentUid)
+        .where('date', isGreaterThan: now)
+        .orderBy('date', descending: false)
+        .snapshots();
+  } else {
+    return FirebaseFirestore.instance
+        .collection('events')
+       .where('participantid', arrayContains: currentUid)
+        .where('date', isLessThan: now)
+       // .orderBy('date', descending: true)
+        .snapshots();
   }
+  
+  }
+  
 }
 
 
