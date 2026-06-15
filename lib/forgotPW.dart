@@ -31,11 +31,10 @@ class _ForgotpwState extends State<Forgotpw> {
 
       backgroundColor: AppColors.bg,
 
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title: const Text("Forgot Password"),
+      appBar: AppBar(title:Align(
+          alignment:Alignment.centerRight,
+          child: const Text("Forgot Password"),
+        )
       ),
 
 
@@ -46,7 +45,7 @@ class _ForgotpwState extends State<Forgotpw> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                padding:  EdgeInsets.symmetric(horizontal: 30.0),
                 child: Text("Enter Your Email Address and we will send you a password reset link."
                 ,style: TextStyle(fontSize: 18, color: AppColors.ink), textAlign: TextAlign.center,),
               ),        
@@ -96,7 +95,6 @@ class _ForgotpwState extends State<Forgotpw> {
                          '/login',);
                         
                         } on FirebaseAuthException catch (e) {
-                          print(e);
 
                           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

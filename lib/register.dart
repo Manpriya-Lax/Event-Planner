@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eventplanner/emailverify.dart';
-import 'package:eventplanner/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -118,11 +116,10 @@ class _RegisterPageState extends State<RegisterPage> {
     
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title: const Text("Register"),
+      appBar: AppBar(title:Align(
+          alignment:Alignment.centerRight,
+          child: const Text("Register"),
+        )
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -272,16 +269,15 @@ TextButton(
                   if (_formKey.currentState?.validate() ?? false) {
                     // Firebase sign up
                     
-               WidgetsFlutterBinding.ensureInitialized();
-                await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform );
+           
                 var instance = FirebaseAuth.instance;
-                print (instance);
 
                 
 
                   final username = nameController.text.trim().toLowerCase();
 
                   bool exists = await usernameExists(username);
+
 
                   if (exists) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -302,7 +298,7 @@ TextButton(
 
 
                   await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
-                    'username': nameController.text.trim(), 
+                    'username': nameController.text.toLowerCase().trim(), 
                     'avatarId': _selectedAvatarIndex,
                     'createdAt': FieldValue.serverTimestamp(),
                     'DateOfBirth': dateController.text.trim(),
@@ -315,7 +311,7 @@ TextButton(
                   var user =credential.user;
                   await user?.sendEmailVerification();
 
-                  print(credential);
+
 
 
                    {
@@ -324,6 +320,7 @@ TextButton(
                       MaterialPageRoute(builder: (_) => const Emailverify()),
                     );
                   }
+                  if (!mounted) return;
                   }
                   }
                 },
@@ -388,7 +385,7 @@ Widget _brutalDropdown() {
     ),
     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
     child: DropdownButtonFormField<String>(
-      value: _selectedGender,
+      initialValue: _selectedGender,
       isExpanded: true,
       decoration: const InputDecoration(
         border: InputBorder.none,
@@ -411,12 +408,5 @@ Widget _brutalDropdown() {
 }
 
 
-Future<bool> isUsernameTaken(String username) async {
-  final doc = await FirebaseFirestore.instance
-      .collection('usernames')
-      .doc(username.toLowerCase())
-      .get();
 
-  return doc.exists;
-}
 }

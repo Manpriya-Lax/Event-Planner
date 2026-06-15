@@ -44,12 +44,12 @@ ThemeData softNeoTheme() {
       ),
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.bg,
+      backgroundColor: AppColors.primary,
       foregroundColor: AppColors.ink,
       elevation: 0,
       centerTitle: false,
       titleTextStyle: TextStyle(
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: FontWeight.w900,
         color: AppColors.ink,
       ),
@@ -456,7 +456,7 @@ class DisplayEvent extends StatelessWidget {
             );
                         },
 
-                        child: Text("Cancle event"),
+                        child: Text("Cancel event"),
                       ),
               
 

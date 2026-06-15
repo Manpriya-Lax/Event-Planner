@@ -19,22 +19,10 @@ class _RequestsPageState extends State<RequestsPage> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(
-
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title:Align(
+      appBar: AppBar(title:Align(
           alignment:Alignment.centerRight,
-          child: const Text("Friend Requestes"),
-
-        ),
-         leading: IconButton(
-    icon: const Icon(Icons.arrow_back),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-  ),
+          child: const Text("Requests"),
+        )
       ),
 
       body: Padding(
@@ -46,7 +34,7 @@ class _RequestsPageState extends State<RequestsPage> {
 
             Expanded(
               
-              child: Expanded(
+              
   child: StreamBuilder<QuerySnapshot>(
     stream: getRequests(),
     builder: (context, snapshot) {
@@ -111,7 +99,7 @@ class _RequestsPageState extends State<RequestsPage> {
     },
   ),
 )
-            )  
+            
   ],
         ),
       ),

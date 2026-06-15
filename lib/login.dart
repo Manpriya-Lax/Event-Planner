@@ -19,7 +19,7 @@ class _loginPageState extends State<loginPage> {
  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextStyle textfieldstyle() {
     return TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold);
   }
@@ -29,14 +29,14 @@ class _loginPageState extends State<loginPage> {
     return  Scaffold(
        backgroundColor: AppColors.bg,
 
-        body: Container(
+        body: SizedBox(
           height: double.infinity,
           width: double.infinity,
           
 
           child: Center(
             child: SingleChildScrollView(
-              child: Container(
+              
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -91,10 +91,10 @@ class _loginPageState extends State<loginPage> {
                               obscureText: !revealPassword,
                               controller: passwordController,
                               keyboardType: TextInputType.visiblePassword,
-                              validator: (PasswordString) {
-                                if (PasswordString == null ||
-                                    PasswordString.isEmpty ||
-                                    PasswordString.length < 6) {
+                              validator: (passwordString) {
+                                if (passwordString == null ||
+                                    passwordString.isEmpty ||
+                                    passwordString.length < 6) {
                                   return "enter valid Password";
                                 }
                               },
@@ -137,8 +137,6 @@ class _loginPageState extends State<loginPage> {
                                 if (_formKey.currentState?.validate() ??
                                     false) {
                                  
-                var instance = FirebaseAuth.instance;
-                print (instance);
 
                try {
                  final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -151,7 +149,7 @@ class _loginPageState extends State<loginPage> {
                  if (credential.user != null) {
                    Navigator.pushReplacementNamed(context, '/home');
                  }
-               } on FirebaseAuthException catch (e) {
+               } on FirebaseAuthException {
                  if (!mounted) return;
 
 
@@ -209,7 +207,7 @@ class _loginPageState extends State<loginPage> {
 
                             SizedBox(height: 40.0),
                             Text(
-                              "Dont have a account",
+                              "Don't have an account",
                               style: TextStyle(fontSize: 20.0),
                             ),
 
@@ -245,7 +243,7 @@ class _loginPageState extends State<loginPage> {
                         ],),
                                   child: Center(
                                     child: Text(
-                                      "Create a new accout ",
+                                      "Create a new account ",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontSize: 23,
@@ -265,7 +263,7 @@ class _loginPageState extends State<loginPage> {
               ),
             ),
           ),
-        ),
+        
       );
     
   }

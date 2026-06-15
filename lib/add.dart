@@ -22,8 +22,8 @@ class _AddEventPageState extends State<AddEventPage> {
   final currentUid = FirebaseAuth.instance.currentUser!.uid;
  
 
-List<String> ParticipantId = [];
-List<String> ParticipantName = [];
+List<String> participantId = [];
+List<String> participantName = [];
   
 
 
@@ -33,12 +33,10 @@ List<String> ParticipantName = [];
     return Scaffold(
       backgroundColor: AppColors.bg,
 
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title: const Text("Add New Event"),
-      ),
+      appBar: AppBar(title:Align(
+          alignment:Alignment.centerRight,
+          child: const Text("Add a New Event"),
+        )),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -104,7 +102,7 @@ StreamBuilder<QuerySnapshot>(
         final friendUid = friend.id;
         final username = friend['username'] ?? 'No Name';
 
-        final isSelected = ParticipantId.contains(friendUid);
+        final isSelected = participantId.contains(friendUid);
 
         return CheckboxListTile(
           title: Text(username),
@@ -112,11 +110,11 @@ StreamBuilder<QuerySnapshot>(
           onChanged: (value) {
             setState(() {
               if (value == true) {
-                ParticipantId.add(friendUid);
-                ParticipantName.add(username);
+                participantId.add(friendUid);
+                participantName.add(username);
               } else {
-                ParticipantId.remove(friendUid);
-                ParticipantName.remove(username);
+              participantId.remove(friendUid);
+                participantName.remove(username);
               }
             });
           },
@@ -186,9 +184,9 @@ Future<void> addEvent({
   //required String puid,
 }) async {
   final user = FirebaseAuth.instance.currentUser;
-  final participants = [currentUid, ...ParticipantId];
+  final participants = [currentUid, ...participantId];
   final username = await getCurrentUsername();
-  final participantsnames = [username, ...ParticipantName];
+  final participantsnames = [username, ...participantName];
   if (user == null) {
     throw Exception("User not logged in");
   }

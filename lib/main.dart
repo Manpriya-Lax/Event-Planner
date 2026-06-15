@@ -1,4 +1,4 @@
-import 'package:eventplanner/Profile.dart';
+import 'package:eventplanner/profile.dart';
 import 'package:eventplanner/add.dart';
 import 'package:eventplanner/emailverify.dart';
 import 'package:eventplanner/forgotPW.dart';
@@ -10,6 +10,9 @@ import 'package:eventplanner/login.dart';
 import 'package:eventplanner/home.dart';
 import 'package:eventplanner/register.dart';
 import 'package:eventplanner/setting.dart';
+import 'package:eventplanner/theme.dart';
+
+
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,17 +35,18 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   Widget build(BuildContext context) {    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:  const homePage(),
+      theme: softNeoTheme(), 
+      home:  const HomePage(),
 
       routes: {
       
         "/login": (context) => const loginPage(),
         "/register": (context) => const RegisterPage(),
-        "/home": (context) => const homePage(),
+        "/home": (context) => const HomePage(),
         "/profile": (context) => const ProfilePage(),
         "/add": (context) => const AddEventPage(),
         '/friends': (context) => const FriendsPage(),
-        "/settings": (context) => const settings(),
+        "/settings": (context) => const Setting(),
         "/emailverify": (context) => const Emailverify(),
         "/forgotpw": (context) => const Forgotpw(),
         "/invite": (context) => const InvitePage(),

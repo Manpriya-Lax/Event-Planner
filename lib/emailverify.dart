@@ -16,11 +16,10 @@ class _EmailverifyState extends State<Emailverify> {
     return Scaffold(
 
        backgroundColor: AppColors.bg,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title: const Text("Email Verification"),
+      appBar: AppBar(title:Align(
+          alignment:Alignment.centerRight,
+          child: const Text("Email Verification"),
+        )
       ),
 
 

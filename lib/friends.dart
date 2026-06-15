@@ -13,11 +13,6 @@ class FriendsPage extends StatefulWidget {
 class _FriendsPageState extends State<FriendsPage> {
   final TextEditingController _searchController = TextEditingController();
 
-  // ✅ Temporary sample data (replace later with Firebase)
-  final List<Map<String, String>> _friends = [
-  ];
-
-  String _query = "";
 
   @override
   void dispose() {
@@ -25,38 +20,17 @@ class _FriendsPageState extends State<FriendsPage> {
     super.dispose();
   }
 
-  List<Map<String, String>> get _filteredFriends {
-    if (_query.trim().isEmpty) return _friends;
-    final q = _query.toLowerCase();
-    return _friends.where((f) {
-      final name = (f["name"] ?? "").toLowerCase();
-      final email = (f["email"] ?? "").toLowerCase();
-      return name.contains(q) || email.contains(q);
-    }).toList();
-  }
+  
 
   @override
   Widget build(BuildContext context) {
-    final list = _filteredFriends;
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(
-
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title:Align(
+      appBar: AppBar(title:Align(
           alignment:Alignment.centerRight,
           child: const Text("Friends"),
-
-        ),
-         leading: IconButton(
-    icon: const Icon(Icons.arrow_back),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-  ),
+        )
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -84,7 +58,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
       return ListView.separated(
         itemCount: friends.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final friendDoc = friends[index];
 

@@ -30,22 +30,10 @@ class _InvitePageState extends State<InvitePage> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(
-
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title:Align(
+      appBar: AppBar(title:Align(
           alignment:Alignment.centerRight,
-          child: const Text("Friends"),
-
-        ),
-         leading: IconButton(
-    icon: const Icon(Icons.arrow_back),
-    onPressed: () {
-      Navigator.pop(context);
-    },
-  ),
+          child: const Text("Add Friends "),
+        )
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -54,10 +42,10 @@ class _InvitePageState extends State<InvitePage> {
             _searchBox(),
             const SizedBox(height: 16),
 
-            Container(
+            SizedBox(
               width: double.infinity,
               height: 95,
-              child: Expanded(child:StreamBuilder<QuerySnapshot> (
+              child:StreamBuilder<QuerySnapshot> (
               
                stream: searchUser(),
                
@@ -65,22 +53,29 @@ class _InvitePageState extends State<InvitePage> {
                 
                 
 
-                if (_query.isEmpty){
+                if (_query.trim().isEmpty){
                   return const Text("No user found");
                 }
 
               
                 if (snapshot.connectionState == ConnectionState.waiting)
                 {
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: AppColors.primary,
-                      strokeWidth: 2,
+                  return const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                        strokeWidth: 2,
+                      ),
                     ),
                   );
                 }
+                 if (snapshot.hasError) {
+        return Center(
+          child: Text("Error: ${snapshot.error}"),
+        );
+      }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
                 {
                   return const Text("No user found");
@@ -104,7 +99,7 @@ class _InvitePageState extends State<InvitePage> {
               
               }
               ) ),
-            )
+            
           ],
         ),
       ),
@@ -162,7 +157,7 @@ class _InvitePageState extends State<InvitePage> {
   
   return FirebaseFirestore.instance
       .collection('users')
-      .where('username', isEqualTo: _query)
+      .where('username'.toLowerCase(), isEqualTo: _query)
       .limit(1)
       .snapshots();
 

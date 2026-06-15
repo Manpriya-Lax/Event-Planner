@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
@@ -42,11 +39,10 @@ Future<String> avatar() async {
     return Scaffold(
       backgroundColor: AppColors.bg,
 
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.ink,
-        elevation: 0,
-        title: const Text("Profile"),
+      appBar: AppBar(title:Align(
+          alignment:Alignment.centerRight,
+          child: const Text("Profile"),
+        )
       ),
 
       body: Center(
@@ -131,7 +127,6 @@ Future<String> avatar() async {
               text: "Edit Profile",
               icon: Icons.edit,
               onTap: () {
-                print("Edit Profile");
               },
             ),
 
@@ -142,8 +137,9 @@ Future<String> avatar() async {
               text: "Logout",
               icon: Icons.logout,
               onTap: () {
-                Navigator.pop(context);
-              },
+                    FirebaseAuth.instance.signOut();
+
+                    Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);              },
             ),
           ],
         ),

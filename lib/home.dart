@@ -1,18 +1,17 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
-class homePage extends StatelessWidget {
-  const homePage({super.key});
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    FirebaseApp app = Firebase.app();
-    return MaterialApp(
 
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+      return Scaffold(
+        
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -57,7 +56,9 @@ class homePage extends StatelessWidget {
                   title: const Text('Logout'),
                   onTap: () {
                     // Handle Logout tap
-                    Navigator.pushNamed(context, "/login");
+                    FirebaseAuth.instance.signOut();
+
+                    Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);
                     // Close the drawer
                   },
                 ),
@@ -65,29 +66,14 @@ class homePage extends StatelessWidget {
             ],
           ),
         ),
-        appBar: AppBar(
-           backgroundColor: AppColors.primary,
-      foregroundColor: AppColors.ink,
-      elevation: 0,
-      centerTitle: false,
-      titleTextStyle: TextStyle(
-        fontSize: 25,
-        fontWeight: FontWeight.w900,
-        color: AppColors.ink,
-        
-      ),
-      title: Align(
-        alignment: Alignment.centerRight,
-        child: Text("Home"),
-      ),
-
-     
-
-      
+        appBar: AppBar(title:Align(
+          alignment:Alignment.centerRight,
+          child: const Text("Home"),
+        )
         ),
 
         backgroundColor: AppColors.bg,
-          body: Container(
+          body: SizedBox(
             height: double.infinity,
             width: double.infinity,
             
@@ -135,7 +121,7 @@ class homePage extends StatelessWidget {
   floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat, 
       
-      ),
+    
     );
   }
 
