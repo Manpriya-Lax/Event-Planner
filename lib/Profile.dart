@@ -116,30 +116,18 @@ Future<String> avatar() async {
 
             // 📧 Email Box
             _profileBox("Email", user?.email ?? "No Email"),
-            
-            
-
-
-            const SizedBox(height: 40),
-
-            // ✏️ Edit Button
-            _actionButton(
-              text: "Edit Profile",
-              icon: Icons.edit,
-              onTap: () {
-              },
-            ),
+          
 
             const SizedBox(height: 20),
 
-            // 🚪 Logout Button
-            _actionButton(
+            //  Logout Button
+            BrutalButton(
               text: "Logout",
-              icon: Icons.logout,
-              onTap: () {
+              onTap: () async{
                     FirebaseAuth.instance.signOut();
 
-                    Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);              },
+                    Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);            
+                      },
             ),
           ],
         ),
@@ -181,47 +169,5 @@ Future<String> avatar() async {
   }
 
   // 🔥 Action Button
-  Widget _actionButton({
-    required String text,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 250,
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: AppColors.ink,
-            width: 2,
-          ),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.ink,
-              offset: Offset(5, 5),
-              blurRadius: 0,
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: AppColors.ink),
-            const SizedBox(width: 10),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.ink,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  
 }

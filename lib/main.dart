@@ -5,6 +5,7 @@ import 'package:eventplanner/forgotPW.dart';
 import 'package:eventplanner/friends.dart';
 import 'package:eventplanner/invite.dart';
 import 'package:eventplanner/requests.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:eventplanner/login.dart';
 import 'package:eventplanner/home.dart';
@@ -36,7 +37,21 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: softNeoTheme(), 
-      home:  const HomePage(),
+      home:  StreamBuilder<User?>(
+  stream: FirebaseAuth.instance.authStateChanges(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) 
+    {
+      return const CircularProgressIndicator();
+    }
+      
+    if (snapshot.hasData && snapshot.data!.emailVerified) 
+    {
+      return const HomePage();
+    }
+    return const loginPage();
+  },
+),
 
       routes: {
       

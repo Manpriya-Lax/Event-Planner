@@ -19,7 +19,6 @@ class _AddEventPageState extends State<AddEventPage> {
   final TextEditingController timeController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final currentUid = FirebaseAuth.instance.currentUser!.uid;
  
 
 List<String> participantId = [];
@@ -30,6 +29,9 @@ List<String> participantName = [];
 
   @override
   Widget build(BuildContext context) {
+
+      final currentUid = FirebaseAuth.instance.currentUser!.uid;
+
     return Scaffold(
       backgroundColor: AppColors.bg,
 
@@ -77,6 +79,7 @@ const Align(
 ),
 
 StreamBuilder<QuerySnapshot>(
+  
   stream: FirebaseFirestore.instance
       .collection('users')
       .doc(currentUid)
@@ -183,6 +186,7 @@ Future<void> addEvent({
   required DateTime eventDate,
   //required String puid,
 }) async {
+    final currentUid = FirebaseAuth.instance.currentUser!.uid;
   final user = FirebaseAuth.instance.currentUser;
   final participants = [currentUid, ...participantId];
   final username = await getCurrentUsername();

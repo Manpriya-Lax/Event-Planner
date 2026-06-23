@@ -142,10 +142,12 @@ class BrutalButton extends StatelessWidget {
   final String text;
   final Future<void> Function() onTap;
 
+
   const BrutalButton({
     super.key,
     required this.text,
     required this.onTap,
+
   });
 
   @override
