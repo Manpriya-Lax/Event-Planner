@@ -1,1 +1,8 @@
-{"flutter":{"platforms":{"dart":{"lib/firebase_options.dart":{"projectId":"event-planner-3f077","configurations":{"android":"1:557441465698:android:244fb2ec4dd59c8a1d403b","ios":"1:557441465698:ios:20195d19b22886ff1d403b"}}},"android":{"default":{"projectId":"event-planner-3f077","appId":"1:557441465698:android:244fb2ec4dd59c8a1d403b","fileOutput":"android/app/google-services.json"}}}}}
+{
+    "flutter":{"platforms":{"dart":{"lib/firebase_options.dart":
+{
+    "projectId":"event-planner-3f077","configurations":{"android":"1:557441465698:android:244fb2ec4dd59c8a1d403b","ios":"1:557441465698:ios:20195d19b22886ff1d403b"}
+}},"android":{
+    "default":{"projectId":"event-planner-3f077","appId":"1:557441465698:android:244fb2ec4dd59c8a1d403b","fileOutput":"android/app/google-services.json"}
+    },"firestore": {"rules": "firestore.rules"}
+    }}}
