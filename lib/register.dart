@@ -53,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
             Future<bool> usernameExists(String username) async {
               final result = await FirebaseFirestore.instance
-              .collection('users')
+              .collection('publicProfiles')
               .where('username', isEqualTo: username.trim().toLowerCase())
               .limit(1)
               .get();
@@ -271,6 +271,8 @@ TextButton(
                     
            
                 var instance = FirebaseAuth.instance;
+                final messenger = ScaffoldMessenger.of(context);
+                final navigator = Navigator.of(context);
 
                 
 
@@ -278,9 +280,8 @@ TextButton(
 
                   bool exists = await usernameExists(username);
 
-
                   if (exists) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       const SnackBar(content: Text("Username already taken")),
                     );
                     return;
@@ -297,30 +298,41 @@ TextButton(
                   );
 
 
-                  await FirebaseFirestore.instance.collection('users').doc(credential.user!.uid).set({
-                    'username': nameController.text.toLowerCase().trim(), 
-                    'avatarId': _selectedAvatarIndex,
-                    'createdAt': FieldValue.serverTimestamp(),
-                    'DateOfBirth': dateController.text.trim(),
-                    'gender': _selectedGender,
-                    'email': emailController.text.trim(),
+                  final uid = credential.user!.uid;
+                  final username = nameController.text.trim().toLowerCase();
+                  final batch = FirebaseFirestore.instance.batch();
 
-                  });
+                  batch.set(
+                    FirebaseFirestore.instance.collection('users').doc(uid),
+                    {
+                      'username': username,
+                      'avatarId': _selectedAvatarIndex,
+                      'createdAt': FieldValue.serverTimestamp(),
+                      'DateOfBirth': dateController.text.trim(),
+                      'gender': _selectedGender,
+                      'email': emailController.text.trim(),
+                    },
+                  );
+
+                  batch.set(
+                    FirebaseFirestore.instance.collection('publicProfiles').doc(uid),
+                    {
+                      'username': username,
+                      'avatarId': _selectedAvatarIndex,
+                    },
+                  );
+
+                  await batch.commit();
+                  
 
 
                   var user =credential.user;
                   await user?.sendEmailVerification();
-
-
-
-
-                   {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const Emailverify()),
-                    );
-                  }
-                  if (!mounted) return;
+                  navigator.pushReplacement(
+                    MaterialPageRoute(builder: (_) => const Emailverify()),
+                  );
+                  
+                  
                   }
                   }
                 },

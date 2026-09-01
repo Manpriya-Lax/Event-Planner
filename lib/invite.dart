@@ -149,15 +149,16 @@ class _InvitePageState extends State<InvitePage> {
 
   Stream<QuerySnapshot> searchUser()
 {
-  
-  if (_query.isEmpty)
+   final q = _query.trim().toLowerCase();
+
+  if (q.isEmpty)
   { return Stream.empty();
 
   }
   
   return FirebaseFirestore.instance
-      .collection('users')
-      .where('username'.toLowerCase(), isEqualTo: _query)
+      .collection('publicProfiles')
+      .where('username'.toLowerCase(), isEqualTo: q)
       .limit(1)
       .snapshots();
 

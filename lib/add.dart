@@ -132,6 +132,8 @@ StreamBuilder<QuerySnapshot>(
                 text: "Add Event",
                 onTap: () async {
                   if (_formKey.currentState!.validate()) {
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
                     try {
     final dateParts = dateController.text.split('/');
     final day = int.parse(dateParts[0]);
@@ -158,12 +160,12 @@ StreamBuilder<QuerySnapshot>(
 
       );
 
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         const SnackBar(content: Text("Event added successfully!")),
                       );
-                      Navigator.pop(context);
+                      navigator.pop();
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      messenger.showSnackBar(
                         SnackBar(content: Text("Error adding event: $e")),
                       );
                     }

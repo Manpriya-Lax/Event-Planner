@@ -67,6 +67,7 @@ class _loginPageState extends State<loginPage> {
                                     !emailString.contains("@")) {
                                   return "enter valid email";
                                 }
+                                return null;
                               },
                               style: textfieldstyle(),
                               decoration: InputDecoration(
@@ -97,6 +98,7 @@ class _loginPageState extends State<loginPage> {
                                     passwordString.length < 6) {
                                   return "enter valid Password";
                                 }
+                                return null;
                               },
                               style: textfieldstyle(),
                               decoration: InputDecoration(
@@ -138,23 +140,20 @@ class _loginPageState extends State<loginPage> {
                                     false) {
                                  
 
+               final navigator = Navigator.of(context);
+               final messenger = ScaffoldMessenger.of(context);
                try {
                  final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                    email: emailController.text.trim(),
                    password: passwordController.text.trim(),
                  );
 
-                 if (!mounted) return;
-
                  if (credential.user != null) {
-                   Navigator.pushReplacementNamed(context, '/home');
+                   navigator.pushReplacementNamed('/home');
                  }
                } on FirebaseAuthException {
-                 if (!mounted) return;
-
-
-                 ScaffoldMessenger.of(context).showSnackBar(
-                   SnackBar(content: Text("Email or password is incorrect")),
+                 messenger.showSnackBar(
+                   const SnackBar(content: Text("Email or password is incorrect")),
                  );
                }
                               }

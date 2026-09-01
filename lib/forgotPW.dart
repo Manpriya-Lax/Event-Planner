@@ -89,14 +89,15 @@ class _ForgotpwState extends State<Forgotpw> {
                                       false){
         
                         
+                        final navigator = Navigator.of(context);
+                        final messenger = ScaffoldMessenger.of(context);
                         try{
                         await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
-                        Navigator.pushNamed(context,
-                         '/login',);
+                        navigator.pushNamed('/login');
                         
                         } on FirebaseAuthException catch (e) {
 
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
             SnackBar(
               content: Text(e.message ?? "Failed to send reset link"),
             ),

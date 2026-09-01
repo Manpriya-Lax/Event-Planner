@@ -434,14 +434,16 @@ class DisplayEvent extends StatelessWidget {
                     actions: [
                       TextButton(
                         onPressed: ()async {
+                          final navigator = Navigator.of(context);
+                          final messenger = ScaffoldMessenger.of(context);
               await FirebaseFirestore.instance
                   .collection('events')
                   .doc(eventId)
                   .delete();
 
-              Navigator.pop(context); // close confirm dialog
+              navigator.pop(); // close confirm dialog
 
-              ScaffoldMessenger.of(context).showSnackBar(
+              messenger.showSnackBar(
                 const SnackBar(content: Text("Event deleted")),
               );
             },
@@ -535,15 +537,17 @@ class DisplayEvent extends StatelessWidget {
                     ),
                     actions: [
                       TextButton(
-                        onPressed: ()async {
+                        onPressed: () async {
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
               await FirebaseFirestore.instance
                   .collection('events')
                   .doc(eventId)
                   .delete();
 
-              Navigator.pop(context); // close confirm dialog
+              navigator.pop(); // close confirm dialog
 
-              ScaffoldMessenger.of(context).showSnackBar(
+              messenger.showSnackBar(
                 const SnackBar(content: Text("Event deleted")),
               );
             },

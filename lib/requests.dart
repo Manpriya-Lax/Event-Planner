@@ -63,7 +63,7 @@ class _RequestsPageState extends State<RequestsPage> {
 
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance
-                .collection('users')
+                .collection('publicProfiles')
                 .doc(fromUid)
                 .get(),
             builder: (context, userSnap) {
@@ -127,13 +127,13 @@ Future <void> acceptRequest(
   final firestore = FirebaseFirestore.instance;
   
     final currentUserSnap =
-      await firestore.collection('users').doc(currentUid).get();
+      await firestore.collection('publicProfiles').doc(currentUid).get();
 
   final fromUserSnap =
-      await firestore.collection('users').doc(fromUid).get();
+      await firestore.collection('publicProfiles').doc(fromUid).get();
 
-        final currentUsername = currentUserSnap['username'] ?? "No Name";
-  final fromUsername = fromUserSnap['username'] ?? "No Name";
+        final currentUsername = currentUserSnap.data()?['username'] ?? "No Name";
+  final fromUsername = fromUserSnap.data()?['username'] ?? "No Name";
 
 
   await firestore.runTransaction((transaction) async {

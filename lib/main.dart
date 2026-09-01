@@ -1,7 +1,7 @@
 import 'package:eventplanner/profile.dart';
 import 'package:eventplanner/add.dart';
 import 'package:eventplanner/emailverify.dart';
-import 'package:eventplanner/forgotPW.dart';
+import 'package:eventplanner/forgotpw.dart';
 import 'package:eventplanner/friends.dart';
 import 'package:eventplanner/invite.dart';
 import 'package:eventplanner/requests.dart';
@@ -42,7 +42,7 @@ FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: false);
   builder: (context, snapshot) {
     if (snapshot.connectionState == ConnectionState.waiting) 
     {
-      return const CircularProgressIndicator();
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
       
     if (snapshot.hasData && snapshot.data!.emailVerified) 

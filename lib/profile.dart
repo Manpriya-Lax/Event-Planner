@@ -121,14 +121,7 @@ Future<String> avatar() async {
             const SizedBox(height: 20),
 
             //  Logout Button
-            BrutalButton(
-              text: "Logout",
-              onTap: () async{
-                    FirebaseAuth.instance.signOut();
-
-                    Navigator.pushNamedAndRemoveUntil(context, "/login", (r) => false);            
-                      },
-            ),
+            
           ],
         ),
       ),

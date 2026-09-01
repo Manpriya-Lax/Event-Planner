@@ -38,13 +38,15 @@ class _EmailverifyState extends State<Emailverify> {
               padding: const EdgeInsets.symmetric(horizontal: 75.0),
               child: _brutalButton(
                 text: 'Verify',
-                onTap: ()async  {
+                onTap: () async {
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
                   await FirebaseAuth.instance.currentUser?.reload();
                     var user = FirebaseAuth.instance.currentUser;
                     if (user?.emailVerified ?? false) {
-                   Navigator.pushReplacementNamed(context, "/home");
+                   navigator.pushReplacementNamed("/home");
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       const SnackBar(
                         content: Text("Email not verified yet. Please check your inbox."),
                       ),
